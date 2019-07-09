@@ -10,11 +10,13 @@ namespace Monaco.PathTree
         T Value { get; set; }
         string Name { get; }
         string PathKey { get; }
+        IEnumerable<string> Paths { get; }
 
         void AddChild(string name, T value);
         void RemoveChild(string name);
         bool ContainsChild(string name);
         bool TryGetChild(string name, out IPathTreeNode<T> node);
+        bool TryGetChild<U>(string name, out IPathTreeNode<U> node) where U : T;
         void AttachChild(IPathTreeNode<T> node);
         IPathTreeNode<T> DetachChild(string name);
 

@@ -53,6 +53,21 @@ namespace Monaco.PathTree
             return false;
         }
 
+        public bool TryGetValue<U>(string path, out U value) where U : T
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException($"{nameof(TryGetValue)}: parameter '{nameof(path)}' was null or empty");
+
+            if (TryGetNode(path, out var node))
+            {
+                value = (U) node.Value;
+                return true;
+            }
+
+            value = default(U);
+            return false;
+        }
+
         public bool TryGetNode(string path, out IPathTreeNode<T> node)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -74,6 +89,30 @@ namespace Monaco.PathTree
             }
 
             node = nextNode;
+            return true;
+        }
+
+        public bool TryGetNode<U>(string path, out IPathTreeNode<U> node) where U : T
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException($"{nameof(TryGetNode)}: parameter '{nameof(path)}' was null or empty");
+
+            var nodeNames = path.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+            var nodeVisitor = root;
+            IPathTreeNode<T> nextNode = default;
+
+            foreach (var name in nodeNames)
+            {
+                if (!nodeVisitor.TryGetChild(name, out nextNode))
+                {
+                    node = default(PathTreeNode<U>);
+                    return false;
+                }
+                nodeVisitor = nextNode;
+            }
+
+            node = (IPathTreeNode<U>) nextNode;
             return true;
         }
 

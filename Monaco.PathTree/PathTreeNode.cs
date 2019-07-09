@@ -25,6 +25,8 @@ namespace Monaco.PathTree
         /// <returns></returns>
         public string PathKey => "/" + string.Join("/", SelfAndAncestors().Select(x => x.Name).Reverse().ToList());
 
+        public IEnumerable<string> Paths => SelfAndAncestors().Select(x => x.Name).Reverse();
+
         public void AddChild(string name, T value)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -111,6 +113,25 @@ namespace Monaco.PathTree
 
             if (children.TryGetValue(name, out node))
                 return true;
+
+            return false;
+        }
+
+        public bool TryGetChild<U>(string name, out IPathTreeNode<U> node) where U : T
+        {
+            if (name is null)
+                throw new ArgumentException($"{nameof(TryGetChild)}: parameter '{nameof(name)}' was null or empty");
+
+            node = default;
+
+            if (children is null)
+                return false;
+
+            if (children.TryGetValue(name, out var resultNode))
+            {
+                node = (IPathTreeNode<U>) resultNode;
+                return true;
+            }
 
             return false;
         }
