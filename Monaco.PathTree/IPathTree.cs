@@ -8,7 +8,6 @@ namespace Monaco.PathTree
         bool TryGetValue(string path, out T value);
         bool TryGetNode(string path, out IPathTreeNode<T> node);
         void RemoveNode(string path);
-        void AttachNode(string path);
         int Count();
 
         IEnumerable<IPathTreeNode<T>> EnumerateDepthFirst();

@@ -137,10 +137,5 @@ namespace Monaco.PathTree
 
             return nodeCount - 1;
         }
-
-        public void AttachNode(string path)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
