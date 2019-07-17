@@ -158,6 +158,8 @@ namespace Monaco.PathTree
             }
         }
 
+        public IEnumerable<IPathTreeNode<T>> Children() => root.Children();
+
         public int Count()
         {
             int nodeCount = 0;
