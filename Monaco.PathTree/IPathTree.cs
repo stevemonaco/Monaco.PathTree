@@ -12,6 +12,7 @@ namespace Monaco.PathTree
         void RemoveNode(string path);
         int Count();
 
+        IEnumerable<IPathTreeNode<T>> Children();
         IEnumerable<IPathTreeNode<T>> EnumerateDepthFirst();
         IEnumerable<IPathTreeNode<T>> EnumerateBreadthFirst();
     }
