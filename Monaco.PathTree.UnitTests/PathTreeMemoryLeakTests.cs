@@ -9,7 +9,7 @@ namespace Monaco.PathTree.UnitTests
     public class PathTreeMemoryLeakTests
     {
         [Test]
-        public void RemoveNode_FreesMemory()
+        public void RemoveChild_FreesMemory()
         {
             var tree = new PathTree<string>();
 
