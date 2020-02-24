@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Monaco.PathTree
 {
     public class PathTree<T> : IPathTree<T>
     {
-        private IPathTreeNode<T> root = new PathTreeNode<T>($"{nameof(PathTree<T>)}.RootNode", default);
+        public IPathTreeNode<T> Root { get; set; }
         public char[] PathSeparators { get; set; } = new char[] { '\\', '/' };
+
+        public PathTree() { }
+
+        public PathTree(string rootName, T root)
+        {
+            var rootNode = new PathTreeNode<T>(rootName, root);
+            Root = rootNode;
+        }
 
         /// <summary>
         /// Adds the item to the specified path if the parent exists
@@ -19,23 +28,13 @@ namespace Monaco.PathTree
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentException($"{nameof(Add)}: parameter '{nameof(path)}' was null or empty");
 
-            var nodeNames = path.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+            var parent = ResolveParent(path);
 
-            if(nodeNames.Length == 1) // Add to root
-            {
-                root.AddChild(nodeNames[0], value);
-                return;
-            }
+            if (parent is null)
+                throw new KeyNotFoundException($"{nameof(TryGetValue)}: could not find {nameof(path)} '{path}'");
 
-            IPathTreeNode<T> nodeVisitor = root;
-
-            for(int i = 0; i < nodeNames.Length - 1; i++)
-            {
-                if(!nodeVisitor.TryGetChild(nodeNames[i], out nodeVisitor))
-                    throw new KeyNotFoundException($"{nameof(TryGetValue)}: could not find {nameof(path)} '{path}'");
-            }
-
-            nodeVisitor.AddChild(nodeNames[nodeNames.Length - 1], value);
+            var nodeName = path.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries).Last();
+            parent.AddChild(nodeName, value);
         }
 
         public bool TryGetValue(string path, out T value)
@@ -43,7 +42,9 @@ namespace Monaco.PathTree
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentException($"{nameof(TryGetValue)}: parameter '{nameof(path)}' was null or empty");
 
-            if (TryGetNode(path, out var node))
+            var node = ResolveNode(path);
+            
+            if (node is object)
             {
                 value = node.Value;
                 return true;
@@ -58,13 +59,15 @@ namespace Monaco.PathTree
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentException($"{nameof(TryGetValue)}: parameter '{nameof(path)}' was null or empty");
 
-            if (TryGetNode(path, out var node))
+            var node = ResolveNode(path);
+
+            if (node is object)
             {
-                value = (U) node.Value;
+                value = (U)node.Value;
                 return true;
             }
 
-            value = default(U);
+            value = default;
             return false;
         }
 
@@ -73,56 +76,37 @@ namespace Monaco.PathTree
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentException($"{nameof(TryGetNode)}: parameter '{nameof(path)}' was null or empty");
 
-            var nodeNames = path.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+            node = ResolveNode(path);
 
-            var nodeVisitor = root;
-            IPathTreeNode<T> nextNode = default;
-
-            foreach (var name in nodeNames)
-            {
-                if (!nodeVisitor.TryGetChild(name, out nextNode))
-                {
-                    node = default(PathTreeNode<T>);
-                    return false;
-                }
-                nodeVisitor = nextNode;
-            }
-
-            node = nextNode;
-            return true;
+            return node is null;
         }
 
-        public bool TryGetNode<U>(string path, out IPathTreeNode<U> node) where U : T
+        public bool TryGetNode<TDerived>(string path, out IPathTreeNode<TDerived> node) where TDerived : T
         {
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentException($"{nameof(TryGetNode)}: parameter '{nameof(path)}' was null or empty");
 
-            var nodeNames = path.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+            var resolvedNode = ResolveNode(path);
 
-            var nodeVisitor = root;
-            IPathTreeNode<T> nextNode = default;
-
-            foreach (var name in nodeNames)
+            if (resolvedNode is object)
             {
-                if (!nodeVisitor.TryGetChild(name, out nextNode))
-                {
-                    node = default(PathTreeNode<U>);
-                    return false;
-                }
-                nodeVisitor = nextNode;
+                node = (IPathTreeNode<TDerived>) resolvedNode;
+                return true;
             }
 
-            node = (IPathTreeNode<U>) nextNode;
-            return true;
+            node = default;
+            return false;
         }
 
-        public void RemoveNode(string absolutePath)
+        public void RemoveNode(string path)
         {
-            if(string.IsNullOrWhiteSpace(absolutePath))
+            if(string.IsNullOrWhiteSpace(path))
                 throw new ArgumentException();
 
-            if (!TryGetNode(absolutePath, out var removeNode))
-                throw new KeyNotFoundException($"RemoveNode was unable to locate {nameof(absolutePath)}");
+            var removeNode = ResolveNode(path);
+
+            if (removeNode is null)
+                throw new KeyNotFoundException($"RemoveNode was unable to locate {nameof(path)}");
 
             if (removeNode.Parent is null)
                 throw new NullReferenceException();
@@ -130,42 +114,77 @@ namespace Monaco.PathTree
             removeNode.Parent.RemoveChild(removeNode.Name);
         }
 
+        private IPathTreeNode<T> ResolveNode(string absolutePath)
+        {
+            var nodeNames = absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+            return Resolve(nodeNames);
+        }
+
+        private IPathTreeNode<T> ResolveParent(string absolutePath)
+        {
+            var nodeNames = absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+            var parentNodeNames = nodeNames.Take(nodeNames.Length - 1).ToList();
+
+            return Resolve(parentNodeNames);
+        }
+
+        private IPathTreeNode<T> Resolve(IList<string> nodeNames)
+        {
+            if (nodeNames.Count == 0)
+                return null;
+
+            if (nodeNames.First() != Root.Name)
+                return null;
+
+            IPathTreeNode<T> nodeVisitor = Root;
+            IPathTreeNode<T> nextNode;
+
+            foreach (var name in nodeNames.Skip(1))
+            {
+                if (!nodeVisitor.TryGetChild(name, out nextNode))
+                {
+                    return null;
+                }
+                nodeVisitor = nextNode;
+            }
+
+            return nodeVisitor;
+        }
+
         /// <summary>
-        /// Allows iteration over the PathTrie
+        /// Allows iteration over the PathTree
         /// </summary>
         /// <returns></returns>
         /// <remarks>Idea adapted from https://www.benjamin.pizza/posts/2017-11-13-recursion-without-recursion.html 
         /// Implementation adapted from https://blogs.msdn.microsoft.com/wesdyer/2007/03/23/all-about-iterators/
         /// </remarks>
-        public IEnumerable<IPathTreeNode<T>> EnumerateDepthFirst() => root.DescendantsDepthFirst();
+        public IEnumerable<IPathTreeNode<T>> EnumerateDepthFirst() => Root.SelfAndDescendantsDepthFirst();
 
-        public IEnumerable<IPathTreeNode<T>> EnumerateBreadthFirst() => root.DescendantsDepthFirst();
+        public IEnumerable<IPathTreeNode<T>> EnumerateBreadthFirst() => Root.SelfAndDescendantsBreadthFirst();
 
-        public IEnumerable<T> DescendantsDepthFirst(string nodePath = "")
-        {
-            var nodeStack = new Stack<IPathTreeNode<T>>();
+        //public IEnumerable<T> DescendantsDepthFirst(string nodePath = "")
+        //{
+        //    var nodeStack = new Stack<IPathTreeNode<T>>();
 
-            foreach (var node in root.Children())
-                nodeStack.Push(node);
+        //    foreach (var node in root.Children())
+        //        nodeStack.Push(node);
 
-            while (nodeStack.Count > 0)
-            {
-                var node = nodeStack.Pop();
-                yield return node.Value;
+        //    while (nodeStack.Count > 0)
+        //    {
+        //        var node = nodeStack.Pop();
+        //        yield return node.Value;
 
-                foreach (var child in node.Children())
-                    nodeStack.Push(child);
-            }
-        }
-
-        public IEnumerable<IPathTreeNode<T>> Children() => root.Children();
+        //        foreach (var child in node.Children())
+        //            nodeStack.Push(child);
+        //    }
+        //}
 
         public int Count()
         {
             int nodeCount = 0;
             var nodeStack = new Stack<IPathTreeNode<T>>();
 
-            nodeStack.Push(root);
+            nodeStack.Push(Root);
 
             while (nodeStack.Count > 0)
             {
@@ -176,7 +195,7 @@ namespace Monaco.PathTree
                     nodeStack.Push(child);
             }
 
-            return nodeCount - 1;
+            return nodeCount;
         }
     }
 }

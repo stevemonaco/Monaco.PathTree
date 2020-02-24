@@ -8,9 +8,9 @@ namespace Monaco.PathTree.UnitTests.AssertHelpers
 {
     static class PathTreeAssert
     {
-        public static void EqualsAll<T>(PathTree<T> trie, IReadOnlyCollection<(string, T)> list) where T : IComparable<T>
+        public static void EqualsAll<T>(PathTree<T> tree, IList<(string, T)> list) where T : IComparable<T>
         {
-            var trieCount = trie.Count();
+            var trieCount = tree.Count();
 
             if (trieCount != list.Count)
                 Assert.Fail($"Collection size mismatch between {trieCount} and {list.Count}");
@@ -20,7 +20,7 @@ namespace Monaco.PathTree.UnitTests.AssertHelpers
 
                 foreach (var item in list)
                 {
-                    if (trie.TryGetValue(item.Item1, out var trieItem))
+                    if (tree.TryGetValue(item.Item1, out var trieItem))
                     {
                         if (!comparer.Equals(item.Item2, trieItem))
                             Assert.Fail($"List item {item.Item1} did not match {trieItem} in the {nameof(PathTree<T>)}");

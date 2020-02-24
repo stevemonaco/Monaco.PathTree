@@ -8,35 +8,35 @@ namespace Monaco.PathTree.UnitTests
     [TestFixture]
     public class PathTreeMemoryLeakTests
     {
-        [Test]
-        public void RemoveChild_FreesMemory()
-        {
-            var tree = new PathTree<string>();
+        //[Test]
+        //public void RemoveChild_FreesMemory()
+        //{
+        //    var tree = new PathTree<string>();
 
-            tree.Add("Level1", "TopNode");
-            tree.TryGetNode("Level1", out var topNode);
+        //    tree.Add("Level1", "TopNode");
+        //    tree.TryGetNode("Level1", out var topNode);
 
-            var midNode = new PathTreeNode<string>("Level2", "MidNode");
-            var midRef = new WeakReference(midNode);
+        //    var midNode = new PathTreeNode<string>("Level2", "MidNode");
+        //    var midRef = new WeakReference(midNode);
 
-            var leafNode = new PathTreeNode<string>("Level3", "LeafNode");
-            var leafRef = new WeakReference(leafNode);
+        //    var leafNode = new PathTreeNode<string>("Level3", "LeafNode");
+        //    var leafRef = new WeakReference(leafNode);
 
-            midNode.AttachChild(leafNode);
-            topNode.AttachChild(midNode);
+        //    midNode.AttachChild(leafNode);
+        //    topNode.AttachChild(midNode);
 
-            topNode.RemoveChild("Level2");
+        //    topNode.RemoveChild("Level2");
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+        //    GC.Collect();
+        //    GC.WaitForPendingFinalizers();
+        //    GC.Collect();
 
-            Assert.Multiple(() =>
-            {
-                Assert.IsFalse(midRef.IsAlive);
-                Assert.IsFalse(leafRef.IsAlive);
-            });
+        //    Assert.Multiple(() =>
+        //    {
+        //        Assert.IsFalse(midRef.IsAlive);
+        //        Assert.IsFalse(leafRef.IsAlive);
+        //    });
 
-        }
+        //}
     }
 }

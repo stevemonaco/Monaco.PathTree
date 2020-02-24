@@ -142,31 +142,23 @@ namespace Monaco.PathTree
         /// <returns></returns>
         public IEnumerable<IPathTreeNode<T>> Ancestors()
         {
-            if (Parent is null)
-                yield break;
+            IPathTreeNode<T> nodeVisitor = Parent;
 
-            var parentVisitor = Parent;
-
-            while (parentVisitor.Parent != null)
+            while (nodeVisitor != null)
             {
-                yield return parentVisitor;
-                parentVisitor = parentVisitor.Parent;
+                yield return nodeVisitor;
+                nodeVisitor = nodeVisitor.Parent;
             }
         }
 
         public IEnumerable<IPathTreeNode<T>> SelfAndAncestors()
         {
-            if (Parent is null)
-                yield break;
+            IPathTreeNode<T> nodeVisitor = this;
 
-            yield return this;
-
-            var parentVisitor = Parent;
-
-            while (parentVisitor.Parent != null)
+            while (nodeVisitor != null)
             {
-                yield return parentVisitor;
-                parentVisitor = parentVisitor.Parent;
+                yield return nodeVisitor;
+                nodeVisitor = nodeVisitor.Parent;
             }
         }
 
@@ -181,10 +173,7 @@ namespace Monaco.PathTree
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public IEnumerable<IPathTreeNode<T>> SelfAndDescendantsDepthFirst()
         {
@@ -196,7 +185,7 @@ namespace Monaco.PathTree
             {
                 var node = nodeStack.Pop();
                 yield return node;
-                foreach (var child in node.Children())
+                foreach (var child in node.Children().OrderByDescending(x => x.Name))
                     nodeStack.Push(child);
             }
         }
@@ -211,7 +200,7 @@ namespace Monaco.PathTree
             {
                 var node = nodeQueue.Dequeue();
                 yield return node;
-                foreach (var child in node.Children())
+                foreach (var child in node.Children().OrderByDescending(x => x.Name))
                     nodeQueue.Enqueue(child);
             }
         }
@@ -227,7 +216,7 @@ namespace Monaco.PathTree
             {
                 var node = nodeStack.Pop();
                 yield return node;
-                foreach (var child in node.Children())
+                foreach (var child in node.Children().OrderByDescending(x => x.Name))
                     nodeStack.Push(child);
             }
         }
@@ -245,7 +234,7 @@ namespace Monaco.PathTree
             {
                 var node = nodeQueue.Dequeue();
                 yield return node;
-                foreach (var child in node.Children())
+                foreach (var child in node.Children().OrderByDescending(x => x.Name))
                     nodeQueue.Enqueue(child);
             }
         }
@@ -255,7 +244,7 @@ namespace Monaco.PathTree
             if(children is null)
                 yield break;
 
-            foreach (var child in children.Values)
+            foreach (var child in children.Values.OrderByDescending(x => x.Name))
                 yield return child;
         }
 
