@@ -23,7 +23,7 @@ namespace Monaco.PathTree
         /// Returns the path key
         /// </summary>
         /// <returns></returns>
-        public string PathKey => "/" + string.Join("/", SelfAndAncestors().Select(x => x.Name).Reverse().ToList());
+        public string PathKey => "/" + string.Join("/", SelfAndAncestors().Select(x => x.Name).Reverse());
 
         public IEnumerable<string> Paths => SelfAndAncestors().Select(x => x.Name).Reverse();
 
@@ -167,9 +167,9 @@ namespace Monaco.PathTree
             if (children is null)
                 yield break;
 
-            foreach (var child in children)
+            foreach (var child in Children())
             {
-                yield return child.Value;
+                yield return child;
             }
         }
 
@@ -185,7 +185,7 @@ namespace Monaco.PathTree
             {
                 var node = nodeStack.Pop();
                 yield return node;
-                foreach (var child in node.Children().OrderByDescending(x => x.Name))
+                foreach (var child in node.Children())
                     nodeStack.Push(child);
             }
         }
@@ -200,7 +200,7 @@ namespace Monaco.PathTree
             {
                 var node = nodeQueue.Dequeue();
                 yield return node;
-                foreach (var child in node.Children().OrderByDescending(x => x.Name))
+                foreach (var child in node.Children())
                     nodeQueue.Enqueue(child);
             }
         }
@@ -216,7 +216,7 @@ namespace Monaco.PathTree
             {
                 var node = nodeStack.Pop();
                 yield return node;
-                foreach (var child in node.Children().OrderByDescending(x => x.Name))
+                foreach (var child in node.Children())
                     nodeStack.Push(child);
             }
         }
@@ -234,7 +234,7 @@ namespace Monaco.PathTree
             {
                 var node = nodeQueue.Dequeue();
                 yield return node;
-                foreach (var child in node.Children().OrderByDescending(x => x.Name))
+                foreach (var child in node.Children())
                     nodeQueue.Enqueue(child);
             }
         }

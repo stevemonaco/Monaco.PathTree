@@ -7,7 +7,18 @@ namespace Monaco.PathTree
 {
     public class PathTree<T> : IPathTree<T>
     {
-        public IPathTreeNode<T> Root { get; set; }
+        private IPathTreeNode<T> _root;
+        public IPathTreeNode<T> Root 
+        {
+            get => _root; 
+            set
+            {
+                _root = value;
+                if (_root is object)
+                    _root.Parent = null;
+            }
+        }
+
         public char[] PathSeparators { get; set; } = new char[] { '\\', '/' };
 
         public PathTree() { }
@@ -161,23 +172,6 @@ namespace Monaco.PathTree
         public IEnumerable<IPathTreeNode<T>> EnumerateDepthFirst() => Root.SelfAndDescendantsDepthFirst();
 
         public IEnumerable<IPathTreeNode<T>> EnumerateBreadthFirst() => Root.SelfAndDescendantsBreadthFirst();
-
-        //public IEnumerable<T> DescendantsDepthFirst(string nodePath = "")
-        //{
-        //    var nodeStack = new Stack<IPathTreeNode<T>>();
-
-        //    foreach (var node in root.Children())
-        //        nodeStack.Push(node);
-
-        //    while (nodeStack.Count > 0)
-        //    {
-        //        var node = nodeStack.Pop();
-        //        yield return node.Value;
-
-        //        foreach (var child in node.Children())
-        //            nodeStack.Push(child);
-        //    }
-        //}
 
         public int Count()
         {
