@@ -107,5 +107,38 @@ namespace Monaco.PathTree.UnitTests
             var actual = parent.Children().Select(x => (x.Name, x.Value)).ToList();
             ListAssert.ContainsSameItems(nodeChildren, actual);
         }
+
+        [TestCase("SubItem2", "SubItem5")]
+        public void RenameChild_ReturnsExpected(string childName, string newName)
+        {
+            parent.RenameChild(childName, newName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(parent.TryGetChild(newName, out var actualChild));
+                Assert.AreEqual(newName, actualChild.Name);
+            });
+        }
+
+        [TestCase("newParentName")]
+        public void Rename_Root_ReturnsExpected(string newName)
+        {
+            parent.Rename(newName);
+
+            Assert.AreEqual(newName, parent.Name);
+        }
+
+        [TestCase("SubItem2", "NewSubItem2Name")]
+        public void Rename_Child_ReturnsExpected(string childName, string newName)
+        {
+            parent.TryGetChild(childName, out var child);
+            child.Rename(newName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(parent.TryGetChild(newName, out var actualChild));
+                Assert.AreEqual(newName, actualChild.Name);
+            });
+        }
     }
 }

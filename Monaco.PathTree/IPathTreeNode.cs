@@ -14,11 +14,16 @@ namespace Monaco.PathTree
 
         void AddChild(string name, T value);
         void RemoveChild(string name);
+
         bool ContainsChild(string name);
         bool TryGetChild(string name, out IPathTreeNode<T> node);
         bool TryGetChild<U>(string name, out IPathTreeNode<U> node) where U : T;
+
         void AttachChild(IPathTreeNode<T> node);
         IPathTreeNode<T> DetachChild(string name);
+
+        void Rename(string name);
+        void RenameChild(string oldName, string newName);
 
         IEnumerable<IPathTreeNode<T>> Children();
         IEnumerable<IPathTreeNode<T>> Ancestors();

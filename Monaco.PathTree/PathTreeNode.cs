@@ -82,12 +82,50 @@ namespace Monaco.PathTree
                 throw new ArgumentException($"{nameof(RemoveChild)}: parameter '{nameof(name)}' was null or empty");
 
             if (children is null)
-                throw new ArgumentException($"{nameof(RemoveChild)}: child element with {nameof(name)} '{name}' does not exist");
+                throw new KeyNotFoundException($"{nameof(RemoveChild)}: child element with {nameof(name)} '{name}' does not exist");
 
             if (children.ContainsKey(name))
                 children.Remove(name);
             else
                 throw new KeyNotFoundException($"{nameof(RemoveChild)}: child element with {nameof(name)} '{name}' does not exist");
+        }
+
+        public void RenameChild(string oldName, string newName)
+        {
+            if (oldName is null)
+                throw new ArgumentNullException($"{nameof(RenameChild)}: parameter '{nameof(oldName)}' was null or empty");
+
+            if (newName is null)
+                throw new ArgumentNullException($"{nameof(RenameChild)}: parameter '{nameof(newName)}' was null or empty");
+
+            if (children is null)
+                throw new KeyNotFoundException($"{nameof(RenameChild)}: child element with {nameof(oldName)} '{oldName}' does not exist");
+
+            if (children.TryGetValue(oldName, out var node))
+            {
+                node.Rename(newName);
+            }
+            else
+                throw new KeyNotFoundException($"{nameof(RemoveChild)}: child element with {nameof(oldName)} '{oldName}' does not exist");
+        }
+
+        public void Rename(string name)
+        {
+            if (name is null)
+                throw new ArgumentException($"{nameof(Rename)}: parameter '{nameof(name)}' was null or empty");
+
+            var parent = Parent;
+
+            if (parent is null)
+            {
+                Name = name;
+            }
+            else
+            {
+                parent.DetachChild(Name);
+                Name = name;
+                parent.AttachChild(this);
+            }
         }
 
         public bool ContainsChild(string name)
