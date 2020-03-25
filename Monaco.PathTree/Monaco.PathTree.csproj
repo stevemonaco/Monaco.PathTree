@@ -7,7 +7,7 @@
     <PackageProjectUrl>https://github.com/stevemonaco/Monaco.PathTree</PackageProjectUrl>
     <AssemblyVersion>0.3.0.0</AssemblyVersion>
     <FileVersion>0.3.0.0</FileVersion>
-    <Version>0.2.2</Version>
+    <Version>0.3.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Generic tree structure accessed via disk-like paths. Useful for project hierarchies.</Description>
