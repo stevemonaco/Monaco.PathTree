@@ -13,8 +13,5 @@ namespace Monaco.PathTree
         bool TryGetNode<U>(string path, out IPathTreeNode<U> node) where U : T;
         void RemoveNode(string path);
         int Count();
-
-        IEnumerable<IPathTreeNode<T>> EnumerateDepthFirst();
-        IEnumerable<IPathTreeNode<T>> EnumerateBreadthFirst();
     }
 }

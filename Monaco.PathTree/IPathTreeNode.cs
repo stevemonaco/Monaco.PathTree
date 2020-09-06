@@ -12,6 +12,7 @@ namespace Monaco.PathTree
         string PathKey { get; }
         IEnumerable<string> Paths { get; }
 
+        IEnumerable<IPathTreeNode<T>> Children { get; }
         void AddChild(string name, T value);
         void RemoveChild(string name);
 
@@ -24,12 +25,5 @@ namespace Monaco.PathTree
 
         void Rename(string name);
         void RenameChild(string oldName, string newName);
-
-        IEnumerable<IPathTreeNode<T>> Children();
-        IEnumerable<IPathTreeNode<T>> Ancestors();
-        IEnumerable<IPathTreeNode<T>> SelfAndDescendantsDepthFirst();
-        IEnumerable<IPathTreeNode<T>> SelfAndDescendantsBreadthFirst();
-        IEnumerable<IPathTreeNode<T>> DescendantsDepthFirst();
-        IEnumerable<IPathTreeNode<T>> DescendantsBreadthFirst();
     }
 }

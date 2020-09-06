@@ -104,7 +104,7 @@ namespace Monaco.PathTree.UnitTests
         [Test]
         public void Children_ReturnsExpected()
         {
-            var actual = parent.Children().Select(x => (x.Name, x.Value)).ToList();
+            var actual = parent.Children.Select(x => (x.Name, x.Value)).ToList();
             ListAssert.ContainsSameItems(nodeChildren, actual);
         }
 

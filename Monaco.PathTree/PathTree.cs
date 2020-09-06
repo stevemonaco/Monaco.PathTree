@@ -8,9 +8,9 @@ namespace Monaco.PathTree
     public class PathTree<T> : IPathTree<T>
     {
         private IPathTreeNode<T> _root;
-        public IPathTreeNode<T> Root 
+        public IPathTreeNode<T> Root
         {
-            get => _root; 
+            get => _root;
             set
             {
                 _root = value;
@@ -22,6 +22,11 @@ namespace Monaco.PathTree
         public char[] PathSeparators { get; set; } = new char[] { '\\', '/' };
 
         public PathTree() { }
+
+        public PathTree(IPathTreeNode<T> root)
+        {
+            Root = root;
+        }
 
         public PathTree(string rootName, T root)
         {
@@ -162,17 +167,6 @@ namespace Monaco.PathTree
             return nodeVisitor;
         }
 
-        /// <summary>
-        /// Allows iteration over the PathTree
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>Idea adapted from https://www.benjamin.pizza/posts/2017-11-13-recursion-without-recursion.html 
-        /// Implementation adapted from https://blogs.msdn.microsoft.com/wesdyer/2007/03/23/all-about-iterators/
-        /// </remarks>
-        public IEnumerable<IPathTreeNode<T>> EnumerateDepthFirst() => Root.SelfAndDescendantsDepthFirst();
-
-        public IEnumerable<IPathTreeNode<T>> EnumerateBreadthFirst() => Root.SelfAndDescendantsBreadthFirst();
-
         public int Count()
         {
             int nodeCount = 0;
@@ -185,7 +179,7 @@ namespace Monaco.PathTree
                 var node = nodeStack.Pop();
                 nodeCount++;
 
-                foreach (var child in node.Children())
+                foreach (var child in node.Children)
                     nodeStack.Push(child);
             }
 
