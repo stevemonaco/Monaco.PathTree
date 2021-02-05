@@ -94,7 +94,7 @@ namespace Monaco.PathTree
 
             node = ResolveNode(path);
 
-            return node is null;
+            return node is object;
         }
 
         public bool TryGetNode<TDerived>(string path, out IPathTreeNode<TDerived> node) where TDerived : T
