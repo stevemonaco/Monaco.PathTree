@@ -10,7 +10,8 @@
     <Version>0.4.2</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>Generic tree structure accessed via disk-like paths. Useful for project hierarchies.</Description>
+    <Description>Generic tree structure accessed via disk-like paths. Useful for project hierarchies where resources are decoupled from the tree.</Description>
+    <Copyright>2021</Copyright>
   </PropertyGroup>
 
 </Project>
