@@ -20,7 +20,7 @@ namespace Monaco.PathTree.UnitTests
             var trie = new PathTree<int>("Root", -1);
 
             foreach (var item in testTreeChildren)
-                trie.Add(item.Item1, item.Item2);
+                trie.AddAsPath(item.Item1, item.Item2);
 
             return trie;
         }

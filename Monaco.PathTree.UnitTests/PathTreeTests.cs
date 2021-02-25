@@ -17,7 +17,7 @@ namespace Monaco.PathTree.UnitTests
             var actualItems = new PathTree<int>(root.Item1.Replace("/", ""), root.Item2);
 
             foreach(var item in items.Skip(1))
-                actualItems.Add(item.Item1, item.Item2);
+                actualItems.AddAsPath(item.Item1, item.Item2);
 
             PathTreeAssert.EqualsAll(actualItems, items);
         }
@@ -27,7 +27,7 @@ namespace Monaco.PathTree.UnitTests
         {
             var trie = new PathTree<int>("Root", -1);
 
-            Assert.Throws<KeyNotFoundException>(() => trie.Add(name, value));
+            Assert.Throws<KeyNotFoundException>(() => trie.AddAsPath(name, value));
         }
 
         [TestCaseSource(typeof(PathTreeTestCases), "AddDuplicateCases")]
@@ -38,9 +38,9 @@ namespace Monaco.PathTree.UnitTests
             var actualItems = new PathTree<int>(root.Item1.Replace("/", ""), root.Item2);
 
             foreach(var item in items.Skip(1))
-                actualItems.Add(item.Item1, item.Item2);
+                actualItems.AddAsPath(item.Item1, item.Item2);
 
-            Assert.Throws<ArgumentException>(() => actualItems.Add(duplicates.Item1, duplicates.Item2));
+            Assert.Throws<ArgumentException>(() => actualItems.AddAsPath(duplicates.Item1, duplicates.Item2));
         }
 
         [TestCaseSource(typeof(PathTreeTestCases), "TryGetValueCases")]
@@ -69,7 +69,7 @@ namespace Monaco.PathTree.UnitTests
             var trie = new PathTree<int>("Root", -1);
 
             foreach (var item in items)
-                trie.Add(item.Item1, item.Item2);
+                trie.AddAsPath(item.Item1, item.Item2);
 
             var trieDescendants = trie.EnumerateDepthFirst().Select(x => (x.PathKey, x.Value)).ToList();
             var listItems = items.ToList();

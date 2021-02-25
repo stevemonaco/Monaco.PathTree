@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monaco.PathTree", "Monaco.PathTree\Monaco.PathTree.csproj", "{8E759F1C-0F13-4D9E-B63F-501C9B2CF386}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monaco.PathTree", "Monaco.PathTree\Monaco.PathTree.csproj", "{8E759F1C-0F13-4D9E-B63F-501C9B2CF386}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monaco.PathTree.UnitTests", "Monaco.PathTree.UnitTests\Monaco.PathTree.UnitTests.csproj", "{FC942EE6-342E-4A3E-AB7B-1EDC40FF1999}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monaco.PathTree.UnitTests", "Monaco.PathTree.UnitTests\Monaco.PathTree.UnitTests.csproj", "{FC942EE6-342E-4A3E-AB7B-1EDC40FF1999}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monaco.PathTree.SampleApp", "Monaco.PathTree.SampleApp\Monaco.PathTree.SampleApp.csproj", "{BCCED5A0-4BFD-4A8B-899A-2EA412CCC6E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{FC942EE6-342E-4A3E-AB7B-1EDC40FF1999}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC942EE6-342E-4A3E-AB7B-1EDC40FF1999}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC942EE6-342E-4A3E-AB7B-1EDC40FF1999}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCCED5A0-4BFD-4A8B-899A-2EA412CCC6E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCCED5A0-4BFD-4A8B-899A-2EA412CCC6E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCCED5A0-4BFD-4A8B-899A-2EA412CCC6E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCCED5A0-4BFD-4A8B-899A-2EA412CCC6E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

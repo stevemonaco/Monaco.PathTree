@@ -35,14 +35,14 @@ namespace Monaco.PathTree
         }
 
         /// <summary>
-        /// Adds the item to the specified path if the parent exists
+        /// Adds the item as the specified path if the parent exists
         /// </summary>
-        /// <param name="path">The path associated with the item</param>
-        /// <param name="value">The item</param>
-        public void Add(string path, T value)
+        /// <param name="path">The full path associated with the item</param>
+        /// <param name="item">The item to be added</param>
+        public void AddAsPath(string path, T item)
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(Add)}: parameter '{nameof(path)}' was null or empty");
+                throw new ArgumentException($"{nameof(AddAsPath)}: parameter '{nameof(path)}' was null or empty");
 
             var parent = ResolveParent(path);
 
@@ -50,9 +50,15 @@ namespace Monaco.PathTree
                 throw new KeyNotFoundException($"{nameof(TryGetValue)}: could not find {nameof(path)} '{path}'");
 
             var nodeName = path.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries).Last();
-            parent.AddChild(nodeName, value);
+            parent.AddChild(nodeName, item);
         }
 
+        /// <summary>
+        /// Tries to get the value stored at the specified path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="value"></param>
+        /// <returns>True if successful, false if failed</returns>
         public bool TryGetValue(string path, out T value)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -70,6 +76,13 @@ namespace Monaco.PathTree
             return false;
         }
 
+        /// <summary>
+        /// Tries to get the value of a specific type stored at the specified path
+        /// </summary>
+        /// <typeparam name="U">Type of the value</typeparam>
+        /// <param name="path"></param>
+        /// <param name="value"></param>
+        /// <returns>True if successful, false if failed</returns>
         public bool TryGetValue<U>(string path, out U value) where U : T
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -87,6 +100,12 @@ namespace Monaco.PathTree
             return false;
         }
 
+        /// <summary>
+        /// Tries to get the node contained at the specified location
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public bool TryGetNode(string path, out IPathTreeNode<T> node)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -114,6 +133,10 @@ namespace Monaco.PathTree
             return false;
         }
 
+        /// <summary>
+        /// Removes the node at the specified location
+        /// </summary>
+        /// <param name="path"></param>
         public void RemoveNode(string path)
         {
             if(string.IsNullOrWhiteSpace(path))
@@ -167,6 +190,10 @@ namespace Monaco.PathTree
             return nodeVisitor;
         }
 
+        /// <summary>
+        /// Traverses the tree to count the number of items contained within
+        /// </summary>
+        /// <returns>Number of items</returns>
         public int Count()
         {
             int nodeCount = 0;

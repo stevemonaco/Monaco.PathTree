@@ -6,7 +6,7 @@ namespace Monaco.PathTree
     {
         IPathTreeNode<T> Root { get; set; }
 
-        void Add(string path, T value);
+        void AddAsPath(string path, T value);
         bool TryGetValue(string path, out T value);
         bool TryGetValue<U>(string path, out U value) where U : T;
         bool TryGetNode(string path, out IPathTreeNode<T> node);
