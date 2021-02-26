@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-
-namespace Monaco.PathTree
+﻿namespace Monaco.PathTree
 {
-    public interface IPathTree<T>
+    public interface IPathTree<TItem, TMetadata>
     {
-        IPathTreeNode<T> Root { get; set; }
+        PathTreeNode<TItem, TMetadata> Root { get; set; }
 
-        void AddAsPath(string path, T value);
-        bool TryGetValue(string path, out T value);
-        bool TryGetValue<U>(string path, out U value) where U : T;
-        bool TryGetNode(string path, out IPathTreeNode<T> node);
-        bool TryGetNode<U>(string path, out IPathTreeNode<U> node) where U : T;
+        void AddItemAsPath(string path, TItem value, TMetadata metadata);
+        bool TryGetItem(string path, out TItem value);
+        bool TryGetItem<U>(string path, out U value) where U : TItem;
+        bool TryGetNode(string path, out PathTreeNode<TItem, TMetadata> node);
         void RemoveNode(string path);
         int Count();
     }

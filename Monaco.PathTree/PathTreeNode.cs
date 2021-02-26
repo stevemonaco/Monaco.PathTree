@@ -5,19 +5,29 @@ using System.Collections;
 
 namespace Monaco.PathTree
 {
-    public class PathTreeNode<T> : IPathTreeNode<T>
+    public class PathTreeNode<TItem, TMetadata>
     {
-        protected IDictionary<string, IPathTreeNode<T>> _children;
+        protected IDictionary<string, PathTreeNode<TItem, TMetadata>> _children;
 
-        public IPathTreeNode<T> Parent { get; set; }
-        public T Value { get; set; }
+        public PathTreeNode<TItem, TMetadata> Parent { get; set; }
+        public TItem Item { get; set; }
+        public TMetadata Metadata { get; set; }
         public string Name { get; private set; }
-        public IEnumerable<IPathTreeNode<T>> Children { get => _children?.Values ?? Enumerable.Empty<IPathTreeNode<T>>(); }
 
-        public PathTreeNode(string name, T value)
+        public IEnumerable<PathTreeNode<TItem, TMetadata>> ChildNodes => _children?.Values ?? Enumerable.Empty<PathTreeNode<TItem, TMetadata>>();
+        public IEnumerable<TItem> ChildItems => _children?.Values.Select(x => x.Item) ?? Enumerable.Empty<TItem>();
+
+        public PathTreeNode(string name, TItem item)
         {
-            Value = value;
             Name = name;
+            Item = item;
+        }
+
+        public PathTreeNode(string name, TItem item, TMetadata metadata)
+        {
+            Name = name;
+            Item = item;
+            Metadata = metadata;
         }
 
         /// <summary>
@@ -28,29 +38,29 @@ namespace Monaco.PathTree
 
         public IEnumerable<string> Paths => this.SelfAndAncestors().Select(x => x.Name).Reverse();
 
-        public void AddChild(string name, T value)
+        public void AddChild(string name, TItem item, TMetadata metadata = default)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException($"{nameof(AddChild)}: parameter '{nameof(name)}' was null or empty");
 
             if (_children is null)
-                _children = new Dictionary<string, IPathTreeNode<T>>();
+                _children = new Dictionary<string, PathTreeNode<TItem, TMetadata>>();
 
             if (_children.ContainsKey(name))
                 throw new ArgumentException($"{nameof(AddChild)}: child element with {nameof(name)} '{name}' already exists");
 
-            var node = new PathTreeNode<T>(name, value);
+            var node = new PathTreeNode<TItem, TMetadata>(name, item, metadata);
             node.Parent = this;
             _children.Add(name, node);
         }
 
-        public void AttachChild(IPathTreeNode<T> node)
+        public void AttachChild(PathTreeNode<TItem, TMetadata> node)
         {
             if(node is null)
                 throw new ArgumentException($"{nameof(AttachChild)}: parameter '{nameof(node)}' was null or empty");
 
             if (_children is null)
-                _children = new Dictionary<string, IPathTreeNode<T>>();
+                _children = new Dictionary<string, PathTreeNode<TItem, TMetadata>>();
 
             if (_children.ContainsKey(node.Name))
                 throw new ArgumentException($"{nameof(AttachChild)}: child element with {nameof(node.Name)} '{node.Name}' already exists");
@@ -59,7 +69,7 @@ namespace Monaco.PathTree
             _children.Add(node.Name, node);
         }
 
-        public IPathTreeNode<T> DetachChild(string name)
+        public PathTreeNode<TItem, TMetadata> DetachChild(string name)
         {
             if (name is null)
                 throw new ArgumentException($"{nameof(DetachChild)}: parameter '{nameof(name)}' was null or empty");
@@ -140,10 +150,10 @@ namespace Monaco.PathTree
             return _children.ContainsKey(name);
         }
 
-        public bool TryGetChild(string name, out IPathTreeNode<T> node)
+        public bool TryGetChildNode(string name, out PathTreeNode<TItem, TMetadata> node)
         {
             if(name is null)
-                throw new ArgumentException($"{nameof(TryGetChild)}: parameter '{nameof(name)}' was null or empty");
+                throw new ArgumentException($"{nameof(TryGetChildNode)}: parameter '{nameof(name)}' was null or empty");
 
             node = default;
 
@@ -156,23 +166,23 @@ namespace Monaco.PathTree
             return false;
         }
 
-        public bool TryGetChild<U>(string name, out IPathTreeNode<U> node) where U : T
-        {
-            if (name is null)
-                throw new ArgumentException($"{nameof(TryGetChild)}: parameter '{nameof(name)}' was null or empty");
+        //public bool TryGetChildNode<TDerivedItem>(string name, out PathTreeNode<TDerivedItem, TMetadata> node) where TDerivedItem : TItem
+        //{
+        //    if (name is null)
+        //        throw new ArgumentException($"{nameof(TryGetChildNode)}: parameter '{nameof(name)}' was null or empty");
 
-            node = default;
+        //    node = default;
 
-            if (_children is null)
-                return false;
+        //    if (_children is null)
+        //        return false;
 
-            if (_children.TryGetValue(name, out var resultNode))
-            {
-                node = (IPathTreeNode<U>) resultNode;
-                return true;
-            }
+        //    if (_children.TryGetValue(name, out var resultNode))
+        //    {
+        //        node = (PathTreeNode<TDerivedItem, TMetadata>) resultNode;
+        //        return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
     }
 }

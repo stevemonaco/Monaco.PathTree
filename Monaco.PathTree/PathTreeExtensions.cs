@@ -4,10 +4,10 @@ namespace Monaco.PathTree
 {
     public static class PathTreeExtensions
     {
-        public static IEnumerable<IPathTreeNode<T>> EnumerateDepthFirst<T>(this IPathTree<T> tree) =>
-            tree.Root.SelfAndDescendantsDepthFirst();            
+        public static IEnumerable<PathTreeNode<TItem, TMetadata>> EnumerateDepthFirst<TItem, TMetadata>(this IPathTree<TItem, TMetadata> tree) =>
+            tree.Root.SelfAndDescendantsDepthFirst();
 
-        public static IEnumerable<IPathTreeNode<T>> EnumerateBreadthFirst<T>(this IPathTree<T> tree) =>
+        public static IEnumerable<PathTreeNode<TItem, TMetadata>> EnumerateBreadthFirst<TItem, TMetadata>(this IPathTree<TItem, TMetadata> tree) =>
             tree.Root.SelfAndDescendantsBreadthFirst();
     }
 }

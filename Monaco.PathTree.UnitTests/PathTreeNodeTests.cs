@@ -9,7 +9,7 @@ namespace Monaco.PathTree.UnitTests
     [TestFixture]
     class PathTreeNodeTests
     {
-        private IPathTreeNode<int> parent;
+        private PathTreeNode<int, EmptyMetadata> parent;
         private readonly (string, int)[] nodeChildren = new (string, int)[]
         {
             ("SubItem1", 1), ("SubItem2", 2), ("SubItem3", 3)
@@ -18,23 +18,23 @@ namespace Monaco.PathTree.UnitTests
         [SetUp]
         public void Setup()
         {
-            parent = new PathTreeNode<int>("parent", -1);
+            parent = new PathTreeNode<int, EmptyMetadata>("parent", -1);
             foreach (var item in nodeChildren)
                 parent.AddChild(item.Item1, item.Item2);
         }
 
         [TestCase("TestItem1", 15)]
-        public void AddChild_AsExpected(string name, int value)
+        public void AddChild_AsExpected(string name, int item)
         {
-            parent.AddChild(name, value);
+            parent.AddChild(name, item);
 
-            parent.TryGetChild(name, out var node);
+            parent.TryGetChildNode(name, out var node);
 
             Assert.Multiple(() =>
             {
                 Assert.NotNull(node);
                 Assert.AreEqual(name, node.Name);
-                Assert.AreEqual(value, node.Value);
+                Assert.AreEqual(item, node.Item);
             });
         }
 
@@ -42,26 +42,26 @@ namespace Monaco.PathTree.UnitTests
         public void AttachChild_AsExpected()
         {
             var expected = ("TestItem5", 5);
-            parent.AttachChild(new PathTreeNode<int>(expected.Item1, expected.Item2));
+            parent.AttachChild(new PathTreeNode<int, EmptyMetadata>(expected.Item1, expected.Item2));
 
-            parent.TryGetChild(expected.Item1, out var node);
+            parent.TryGetChildNode(expected.Item1, out var node);
 
             Assert.Multiple(() =>
             {
                 Assert.NotNull(node);
                 Assert.AreEqual(expected.Item1, node.Name);
-                Assert.AreEqual(expected.Item2, node.Value);
+                Assert.AreEqual(expected.Item2, node.Item);
             });
         }
 
         [TestCase("SubItem3", 3)]
-        public void DetachChild_AsExpected(string name, int value)
+        public void DetachChild_AsExpected(string name, int expectedItem)
         {
             var node = parent.DetachChild(name);
             Assert.Multiple(() =>
             {
                 Assert.AreEqual(name, node.Name);
-                Assert.AreEqual(value, node.Value);
+                Assert.AreEqual(expectedItem, node.Item);
             });
         }
 
@@ -88,23 +88,23 @@ namespace Monaco.PathTree.UnitTests
         }
 
         [TestCase("SubItem2", 2)]
-        public void TryGetChild_ReturnsExpected(string name, int expectedValue)
+        public void TryGetChild_ReturnsExpected(string name, int expectedItem)
         {
-            var isFound = parent.TryGetChild(name, out var node);
+            var isFound = parent.TryGetChildNode(name, out var node);
 
             Assert.Multiple(() =>
             {
                 Assert.IsTrue(isFound);
                 Assert.NotNull(node);
                 Assert.AreEqual(name, node.Name);
-                Assert.AreEqual(expectedValue, node.Value);
+                Assert.AreEqual(expectedItem, node.Item);
             });
         }
 
         [Test]
-        public void Children_ReturnsExpected()
+        public void ChildNodes_ReturnsExpected()
         {
-            var actual = parent.Children.Select(x => (x.Name, x.Value)).ToList();
+            var actual = parent.ChildNodes.Select(x => (x.Name, x.Item)).ToList();
             ListAssert.ContainsSameItems(nodeChildren, actual);
         }
 
@@ -115,7 +115,7 @@ namespace Monaco.PathTree.UnitTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(parent.TryGetChild(newName, out var actualChild));
+                Assert.That(parent.TryGetChildNode(newName, out var actualChild));
                 Assert.AreEqual(newName, actualChild.Name);
             });
         }
@@ -131,12 +131,12 @@ namespace Monaco.PathTree.UnitTests
         [TestCase("SubItem2", "NewSubItem2Name")]
         public void Rename_Child_ReturnsExpected(string childName, string newName)
         {
-            parent.TryGetChild(childName, out var child);
+            parent.TryGetChildNode(childName, out var child);
             child.Rename(newName);
 
             Assert.Multiple(() =>
             {
-                Assert.That(parent.TryGetChild(newName, out var actualChild));
+                Assert.That(parent.TryGetChildNode(newName, out var actualChild));
                 Assert.AreEqual(newName, actualChild.Name);
             });
         }

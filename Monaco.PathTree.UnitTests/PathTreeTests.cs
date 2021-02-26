@@ -17,7 +17,7 @@ namespace Monaco.PathTree.UnitTests
             var actualItems = new PathTree<int>(root.Item1.Replace("/", ""), root.Item2);
 
             foreach(var item in items.Skip(1))
-                actualItems.AddAsPath(item.Item1, item.Item2);
+                actualItems.AddItemAsPath(item.Item1, item.Item2);
 
             PathTreeAssert.EqualsAll(actualItems, items);
         }
@@ -27,7 +27,7 @@ namespace Monaco.PathTree.UnitTests
         {
             var trie = new PathTree<int>("Root", -1);
 
-            Assert.Throws<KeyNotFoundException>(() => trie.AddAsPath(name, value));
+            Assert.Throws<KeyNotFoundException>(() => trie.AddItemAsPath(name, value));
         }
 
         [TestCaseSource(typeof(PathTreeTestCases), "AddDuplicateCases")]
@@ -38,17 +38,17 @@ namespace Monaco.PathTree.UnitTests
             var actualItems = new PathTree<int>(root.Item1.Replace("/", ""), root.Item2);
 
             foreach(var item in items.Skip(1))
-                actualItems.AddAsPath(item.Item1, item.Item2);
+                actualItems.AddItemAsPath(item.Item1, item.Item2);
 
-            Assert.Throws<ArgumentException>(() => actualItems.AddAsPath(duplicates.Item1, duplicates.Item2));
+            Assert.Throws<ArgumentException>(() => actualItems.AddItemAsPath(duplicates.Item1, duplicates.Item2));
         }
 
         [TestCaseSource(typeof(PathTreeTestCases), "TryGetValueCases")]
-        public void TryGetValue_AsExpected(IPathTree<int> trie, string path, int expected)
+        public void TryGetValue_AsExpected(PathTree<int> trie, string path, int expected)
         {
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(trie.TryGetValue(path, out var actual));
+                Assert.IsTrue(trie.TryGetItem(path, out var actual));
                 Assert.AreEqual(expected, actual);
             });
         }
@@ -69,9 +69,9 @@ namespace Monaco.PathTree.UnitTests
             var trie = new PathTree<int>("Root", -1);
 
             foreach (var item in items)
-                trie.AddAsPath(item.Item1, item.Item2);
+                trie.AddItemAsPath(item.Item1, item.Item2);
 
-            var trieDescendants = trie.EnumerateDepthFirst().Select(x => (x.PathKey, x.Value)).ToList();
+            var trieDescendants = trie.EnumerateDepthFirst().Select(x => (x.PathKey, x.Item)).ToList();
             var listItems = items.ToList();
 
             CollectionAssert.AreEqual(trieDescendants, expectedOrder);

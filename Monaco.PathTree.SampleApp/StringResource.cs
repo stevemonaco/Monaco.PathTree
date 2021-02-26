@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Monaco.PathTree.SampleApp
+﻿namespace Monaco.PathTree.SampleApp
 {
     public class StringResource : Resource
     {

@@ -20,7 +20,7 @@ namespace Monaco.PathTree.UnitTests.AssertHelpers
 
                 foreach (var item in list)
                 {
-                    if (tree.TryGetValue(item.Item1, out var trieItem))
+                    if (tree.TryGetItem(item.Item1, out var trieItem))
                     {
                         if (!comparer.Equals(item.Item2, trieItem))
                             Assert.Fail($"List item {item.Item1} did not match {trieItem} in the {nameof(PathTree<T>)}");

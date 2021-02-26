@@ -1,14 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Monaco.PathTree
 {
-    public class PathTree<T> : IPathTree<T>
+    public class PathTree<TItem> : PathTree<TItem, EmptyMetadata>
     {
-        private IPathTreeNode<T> _root;
-        public IPathTreeNode<T> Root
+        public PathTree(PathTreeNode<TItem, EmptyMetadata> root) :
+            base(root)
+        {
+        }
+
+        public PathTree(string rootName, TItem rootItem) :
+            base(rootName, rootItem, default)
+        {
+        }
+    }
+
+    public class PathTree<TItem, TMetadata> : IPathTree<TItem, TMetadata>
+    {
+        private PathTreeNode<TItem, TMetadata> _root;
+        public PathTreeNode<TItem, TMetadata> Root
         {
             get => _root;
             set
@@ -21,17 +33,14 @@ namespace Monaco.PathTree
 
         public char[] PathSeparators { get; set; } = new char[] { '\\', '/' };
 
-        public PathTree() { }
-
-        public PathTree(IPathTreeNode<T> root)
+        public PathTree(PathTreeNode<TItem, TMetadata> root)
         {
             Root = root;
         }
 
-        public PathTree(string rootName, T root)
+        public PathTree(string rootName, TItem rootItem, TMetadata rootMetadata = default)
         {
-            var rootNode = new PathTreeNode<T>(rootName, root);
-            Root = rootNode;
+            Root = new PathTreeNode<TItem, TMetadata>(rootName, rootItem, rootMetadata);
         }
 
         /// <summary>
@@ -39,64 +48,64 @@ namespace Monaco.PathTree
         /// </summary>
         /// <param name="path">The full path associated with the item</param>
         /// <param name="item">The item to be added</param>
-        public void AddAsPath(string path, T item)
+        public void AddItemAsPath(string path, TItem item, TMetadata metadata = default)
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(AddAsPath)}: parameter '{nameof(path)}' was null or empty");
+                throw new ArgumentException($"{nameof(AddItemAsPath)}: parameter '{nameof(path)}' was null or empty");
 
             var parent = ResolveParent(path);
 
             if (parent is null)
-                throw new KeyNotFoundException($"{nameof(TryGetValue)}: could not find {nameof(path)} '{path}'");
+                throw new KeyNotFoundException($"{nameof(TryGetItem)}: could not find {nameof(path)} '{path}'");
 
             var nodeName = path.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries).Last();
-            parent.AddChild(nodeName, item);
+            parent.AddChild(nodeName, item, metadata);
         }
 
         /// <summary>
-        /// Tries to get the value stored at the specified path
+        /// Tries to get the item stored at the specified path
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="value"></param>
+        /// <param name="item"></param>
         /// <returns>True if successful, false if failed</returns>
-        public bool TryGetValue(string path, out T value)
+        public bool TryGetItem(string path, out TItem item)
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(TryGetValue)}: parameter '{nameof(path)}' was null or empty");
+                throw new ArgumentException($"{nameof(TryGetItem)}: parameter '{nameof(path)}' was null or empty");
 
             var node = ResolveNode(path);
             
             if (node is object)
             {
-                value = node.Value;
+                item = node.Item;
                 return true;
             }
 
-            value = default(T);
+            item = default(TItem);
             return false;
         }
 
         /// <summary>
-        /// Tries to get the value of a specific type stored at the specified path
+        /// Tries to get the item of a specific type stored at the specified path
         /// </summary>
-        /// <typeparam name="U">Type of the value</typeparam>
+        /// <typeparam name="U">Type of the item</typeparam>
         /// <param name="path"></param>
-        /// <param name="value"></param>
+        /// <param name="item"></param>
         /// <returns>True if successful, false if failed</returns>
-        public bool TryGetValue<U>(string path, out U value) where U : T
+        public bool TryGetItem<U>(string path, out U item) where U : TItem
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(TryGetValue)}: parameter '{nameof(path)}' was null or empty");
+                throw new ArgumentException($"{nameof(TryGetItem)}: parameter '{nameof(path)}' was null or empty");
 
             var node = ResolveNode(path);
 
             if (node is object)
             {
-                value = (U)node.Value;
+                item = (U)node.Item;
                 return true;
             }
 
-            value = default;
+            item = default;
             return false;
         }
 
@@ -106,7 +115,7 @@ namespace Monaco.PathTree
         /// <param name="path"></param>
         /// <param name="node"></param>
         /// <returns></returns>
-        public bool TryGetNode(string path, out IPathTreeNode<T> node)
+        public bool TryGetNode(string path, out PathTreeNode<TItem, TMetadata> node)
         {
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentException($"{nameof(TryGetNode)}: parameter '{nameof(path)}' was null or empty");
@@ -116,22 +125,22 @@ namespace Monaco.PathTree
             return node is object;
         }
 
-        public bool TryGetNode<TDerived>(string path, out IPathTreeNode<TDerived> node) where TDerived : T
-        {
-            if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(TryGetNode)}: parameter '{nameof(path)}' was null or empty");
+        //public bool TryGetNode<TDerived>(string path, out IPathTreeNode<TDerived> node) where TDerived : TValue
+        //{
+        //    if (string.IsNullOrWhiteSpace(path))
+        //        throw new ArgumentException($"{nameof(TryGetNode)}: parameter '{nameof(path)}' was null or empty");
 
-            var resolvedNode = ResolveNode(path);
+        //    var resolvedNode = ResolveNode(path);
 
-            if (resolvedNode is object)
-            {
-                node = (IPathTreeNode<TDerived>) resolvedNode;
-                return true;
-            }
+        //    if (resolvedNode is object)
+        //    {
+        //        node = (IPathTreeNode<TDerived>) resolvedNode;
+        //        return true;
+        //    }
 
-            node = default;
-            return false;
-        }
+        //    node = default;
+        //    return false;
+        //}
 
         /// <summary>
         /// Removes the node at the specified location
@@ -140,7 +149,7 @@ namespace Monaco.PathTree
         public void RemoveNode(string path)
         {
             if(string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException();
+                throw new ArgumentException($"{nameof(RemoveNode)}: parameter '{nameof(path)}' was null or empty");
 
             var removeNode = ResolveNode(path);
 
@@ -153,13 +162,13 @@ namespace Monaco.PathTree
             removeNode.Parent.RemoveChild(removeNode.Name);
         }
 
-        private IPathTreeNode<T> ResolveNode(string absolutePath)
+        private PathTreeNode<TItem, TMetadata> ResolveNode(string absolutePath)
         {
             var nodeNames = absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
             return Resolve(nodeNames);
         }
 
-        private IPathTreeNode<T> ResolveParent(string absolutePath)
+        private PathTreeNode<TItem, TMetadata> ResolveParent(string absolutePath)
         {
             var nodeNames = absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
             var parentNodeNames = nodeNames.Take(nodeNames.Length - 1).ToList();
@@ -167,22 +176,21 @@ namespace Monaco.PathTree
             return Resolve(parentNodeNames);
         }
 
-        private IPathTreeNode<T> Resolve(IList<string> nodeNames)
+        private PathTreeNode<TItem, TMetadata> Resolve(IList<string> nodeNames)
         {
             if (nodeNames.Count == 0)
-                return null;
+                return default;
 
             if (nodeNames.First() != Root.Name)
-                return null;
+                return default;
 
-            IPathTreeNode<T> nodeVisitor = Root;
-            IPathTreeNode<T> nextNode;
+            var nodeVisitor = Root;
 
             foreach (var name in nodeNames.Skip(1))
             {
-                if (!nodeVisitor.TryGetChild(name, out nextNode))
+                if (!nodeVisitor.TryGetChildNode(name, out PathTreeNode<TItem, TMetadata> nextNode))
                 {
-                    return null;
+                    return default;
                 }
                 nodeVisitor = nextNode;
             }
@@ -197,7 +205,7 @@ namespace Monaco.PathTree
         public int Count()
         {
             int nodeCount = 0;
-            var nodeStack = new Stack<IPathTreeNode<T>>();
+            var nodeStack = new Stack<PathTreeNode<TItem, TMetadata>>();
 
             nodeStack.Push(Root);
 
@@ -206,7 +214,7 @@ namespace Monaco.PathTree
                 var node = nodeStack.Pop();
                 nodeCount++;
 
-                foreach (var child in node.Children)
+                foreach (var child in node.ChildNodes)
                     nodeStack.Push(child);
             }
 

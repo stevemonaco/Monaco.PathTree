@@ -9,7 +9,7 @@ namespace Monaco.PathTree.UnitTests
 {
     public class PathTreeTestCases
     {
-        private static IPathTree<int> BuildTestTree()
+        private static PathTree<int> BuildTestTree()
         {
             (string, int)[] testTreeChildren = new (string, int)[]
             {
@@ -20,7 +20,7 @@ namespace Monaco.PathTree.UnitTests
             var trie = new PathTree<int>("Root", -1);
 
             foreach (var item in testTreeChildren)
-                trie.AddAsPath(item.Item1, item.Item2);
+                trie.AddItemAsPath(item.Item1, item.Item2);
 
             return trie;
         }
