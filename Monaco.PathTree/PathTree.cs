@@ -6,7 +6,7 @@ namespace Monaco.PathTree
 {
     public class PathTree<TItem> : PathTree<TItem, EmptyMetadata>
     {
-        public PathTree(PathTreeNode<TItem, EmptyMetadata> root) :
+        public PathTree(PathNode<TItem, EmptyMetadata> root) :
             base(root)
         {
         }
@@ -19,8 +19,8 @@ namespace Monaco.PathTree
 
     public class PathTree<TItem, TMetadata> : IPathTree<TItem, TMetadata>
     {
-        private PathTreeNode<TItem, TMetadata> _root;
-        public PathTreeNode<TItem, TMetadata> Root
+        private PathNode<TItem, TMetadata> _root;
+        public PathNode<TItem, TMetadata> Root
         {
             get => _root;
             set
@@ -33,14 +33,14 @@ namespace Monaco.PathTree
 
         public char[] PathSeparators { get; set; } = new char[] { '\\', '/' };
 
-        public PathTree(PathTreeNode<TItem, TMetadata> root)
+        public PathTree(PathNode<TItem, TMetadata> root)
         {
             Root = root;
         }
 
         public PathTree(string rootName, TItem rootItem, TMetadata rootMetadata = default)
         {
-            Root = new PathTreeNode<TItem, TMetadata>(rootName, rootItem, rootMetadata);
+            Root = new PathNode<TItem, TMetadata>(rootName, rootItem, rootMetadata);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Monaco.PathTree
         /// <param name="path">The full path associated with the item</param>
         /// <param name="item">The item to be added</param>
         /// <param name="metadata">Metadata to associate with the path</param>
-        public PathTreeNode<TItem, TMetadata> AddItemAsPath(string path, TItem item, TMetadata metadata = default)
+        public PathNode<TItem, TMetadata> AddItemAsPath(string path, TItem item, TMetadata metadata = default)
         {
             if (string.IsNullOrWhiteSpace(path))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
@@ -70,7 +70,7 @@ namespace Monaco.PathTree
         /// <param name="nodeName">Name of the node to add</param>
         /// <param name="item">The item to be added</param>
         /// <param name="metadata">Metadata to associate with the new node</param>
-        public PathTreeNode<TItem, TMetadata> AddItemToPath(string path, string nodeName, TItem item, TMetadata metadata = default)
+        public PathNode<TItem, TMetadata> AddItemToPath(string path, string nodeName, TItem item, TMetadata metadata = default)
         {
             if (string.IsNullOrWhiteSpace(path))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
@@ -162,7 +162,7 @@ namespace Monaco.PathTree
         /// <param name="path">The full path associated with the item</param>
         /// <param name="node"></param>
         /// <returns></returns>
-        public bool TryGetNode(string path, out PathTreeNode<TItem, TMetadata> node)
+        public bool TryGetNode(string path, out PathNode<TItem, TMetadata> node)
         {
             if (string.IsNullOrWhiteSpace(path))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
@@ -192,13 +192,13 @@ namespace Monaco.PathTree
             removeNode.Parent.RemoveChildNode(removeNode.Name);
         }
 
-        private PathTreeNode<TItem, TMetadata> ResolveNode(string absolutePath)
+        private PathNode<TItem, TMetadata> ResolveNode(string absolutePath)
         {
             var nodeNames = absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
             return Resolve(nodeNames);
         }
 
-        private PathTreeNode<TItem, TMetadata> ResolveParent(string absolutePath)
+        private PathNode<TItem, TMetadata> ResolveParent(string absolutePath)
         {
             var nodeNames = absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
             var parentNodeNames = nodeNames.Take(nodeNames.Length - 1).ToList();
@@ -206,7 +206,7 @@ namespace Monaco.PathTree
             return Resolve(parentNodeNames);
         }
 
-        private PathTreeNode<TItem, TMetadata> Resolve(IList<string> nodeNames)
+        private PathNode<TItem, TMetadata> Resolve(IList<string> nodeNames)
         {
             if (nodeNames.Count == 0)
                 return default;
@@ -218,7 +218,7 @@ namespace Monaco.PathTree
 
             foreach (var name in nodeNames.Skip(1))
             {
-                if (!nodeVisitor.TryGetChildNode(name, out PathTreeNode<TItem, TMetadata> nextNode))
+                if (!nodeVisitor.TryGetChildNode(name, out PathNode<TItem, TMetadata> nextNode))
                 {
                     return default;
                 }
@@ -235,7 +235,7 @@ namespace Monaco.PathTree
         public int Count()
         {
             int nodeCount = 0;
-            var nodeStack = new Stack<PathTreeNode<TItem, TMetadata>>();
+            var nodeStack = new Stack<PathNode<TItem, TMetadata>>();
 
             nodeStack.Push(Root);
 

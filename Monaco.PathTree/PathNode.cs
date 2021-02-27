@@ -4,19 +4,19 @@ using System.Collections.Generic;
 
 namespace Monaco.PathTree
 {
-    public class PathTreeNode<TItem, TMetadata>
+    public class PathNode<TItem, TMetadata>
     {
-        protected IDictionary<string, PathTreeNode<TItem, TMetadata>> _children;
+        protected IDictionary<string, PathNode<TItem, TMetadata>> _children;
 
-        public PathTreeNode<TItem, TMetadata> Parent { get; set; }
+        public PathNode<TItem, TMetadata> Parent { get; set; }
         public TItem Item { get; set; }
         public TMetadata Metadata { get; set; }
         public string Name { get; private set; }
 
-        public IEnumerable<PathTreeNode<TItem, TMetadata>> ChildNodes => _children?.Values ?? Enumerable.Empty<PathTreeNode<TItem, TMetadata>>();
+        public IEnumerable<PathNode<TItem, TMetadata>> ChildNodes => _children?.Values ?? Enumerable.Empty<PathNode<TItem, TMetadata>>();
         public IEnumerable<TItem> ChildItems => _children?.Values.Select(x => x.Item) ?? Enumerable.Empty<TItem>();
 
-        public PathTreeNode(string rootNodeName, TItem item, TMetadata metadata = default)
+        public PathNode(string rootNodeName, TItem item, TMetadata metadata = default)
         {
             if (string.IsNullOrWhiteSpace(rootNodeName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(rootNodeName));
@@ -41,18 +41,18 @@ namespace Monaco.PathTree
         /// <param name="item">Item associated with node</param>
         /// <param name="metadata">Metadata associated with node</param>
         /// <returns>The node which was added</returns>
-        public PathTreeNode<TItem, TMetadata> AddChild(string nodeName, TItem item, TMetadata metadata = default)
+        public PathNode<TItem, TMetadata> AddChild(string nodeName, TItem item, TMetadata metadata = default)
         {
             if (string.IsNullOrWhiteSpace(nodeName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
 
             if (_children is null)
-                _children = new Dictionary<string, PathTreeNode<TItem, TMetadata>>();
+                _children = new Dictionary<string, PathNode<TItem, TMetadata>>();
 
             if (_children.ContainsKey(nodeName))
                 ThrowHelper.ThrowNodeAlreadyExists(nodeName);
 
-            var node = new PathTreeNode<TItem, TMetadata>(nodeName, item, metadata);
+            var node = new PathNode<TItem, TMetadata>(nodeName, item, metadata);
             node.Parent = this;
             _children.Add(nodeName, node);
 
@@ -63,13 +63,13 @@ namespace Monaco.PathTree
         /// Attaches an existing node as a child
         /// </summary>
         /// <param name="node">Node to attach</param>
-        public void AttachChildNode(PathTreeNode<TItem, TMetadata> node)
+        public void AttachChildNode(PathNode<TItem, TMetadata> node)
         {
             if (node is null)
                 ThrowHelper.ThrowArgumentNull(nameof(node));
 
             if (_children is null)
-                _children = new Dictionary<string, PathTreeNode<TItem, TMetadata>>();
+                _children = new Dictionary<string, PathNode<TItem, TMetadata>>();
 
             if (_children.ContainsKey(node.Name))
                 ThrowHelper.ThrowNodeAlreadyExists(node.Name);
@@ -83,7 +83,7 @@ namespace Monaco.PathTree
         /// </summary>
         /// <param name="nodeName">Name of the node to detach</param>
         /// <returns></returns>
-        public PathTreeNode<TItem, TMetadata> DetachChildNode(string nodeName)
+        public PathNode<TItem, TMetadata> DetachChildNode(string nodeName)
         {
             if (string.IsNullOrWhiteSpace(nodeName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
@@ -191,7 +191,7 @@ namespace Monaco.PathTree
         /// <param name="name">Name of child node to get</param>
         /// <param name="node"></param>
         /// <returns>True if found, false if not found</returns>
-        public bool TryGetChildNode(string name, out PathTreeNode<TItem, TMetadata> node)
+        public bool TryGetChildNode(string name, out PathNode<TItem, TMetadata> node)
         {
             if(string.IsNullOrWhiteSpace(name))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));

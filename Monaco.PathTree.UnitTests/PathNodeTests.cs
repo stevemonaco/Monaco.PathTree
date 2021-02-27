@@ -5,9 +5,9 @@ using NUnit.Framework;
 namespace Monaco.PathTree.UnitTests
 {
     [TestFixture]
-    class PathTreeNodeTests
+    class PathNodeTests
     {
-        private PathTreeNode<int, EmptyMetadata> parent;
+        private PathNode<int, EmptyMetadata> parent;
         private readonly (string, int)[] nodeChildren = new (string, int)[]
         {
             ("SubItem1", 1), ("SubItem2", 2), ("SubItem3", 3)
@@ -16,7 +16,7 @@ namespace Monaco.PathTree.UnitTests
         [SetUp]
         public void Setup()
         {
-            parent = new PathTreeNode<int, EmptyMetadata>("parent", -1);
+            parent = new PathNode<int, EmptyMetadata>("parent", -1);
             foreach (var item in nodeChildren)
                 parent.AddChild(item.Item1, item.Item2);
         }
@@ -40,7 +40,7 @@ namespace Monaco.PathTree.UnitTests
         public void AttachChildNode_AsExpected()
         {
             var expected = ("TestItem5", 5);
-            parent.AttachChildNode(new PathTreeNode<int, EmptyMetadata>(expected.Item1, expected.Item2));
+            parent.AttachChildNode(new PathNode<int, EmptyMetadata>(expected.Item1, expected.Item2));
 
             parent.TryGetChildNode(expected.Item1, out var node);
 
