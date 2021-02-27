@@ -12,12 +12,13 @@ namespace Monaco.PathTree.SampleApp
                 new Metadata(DateTime.Now, Guid.NewGuid())
             );
 
+            // Add nodes using absolute paths
             tree.AddItemAsPath("/Root/Node1", 
                 new StringResource("Resource 1a", "This is the first child node"),
                 new Metadata(DateTime.Now + TimeSpan.FromMinutes(1), Guid.NewGuid())
             );
 
-            tree.AddItemAsPath("/Root/Node2",
+            var node2 = tree.AddItemAsPath("/Root/Node2",
                 new StringResource("Resource 1b", "This is the second child node"),
                 new Metadata(DateTime.Now + TimeSpan.FromMinutes(2), Guid.NewGuid())
             );
@@ -32,16 +33,18 @@ namespace Monaco.PathTree.SampleApp
                 new Metadata(DateTime.Now + TimeSpan.FromMinutes(4), Guid.NewGuid())
             );
 
-            tree.AddItemAsPath("/Root/Node2/BlueNode",
+            // Add child nodes directly to a node
+            node2.AddChild("BlueNode",
                 new Rgba32Resource("Blue", 0, 0, 255, 0),
                 new Metadata(DateTime.Now + TimeSpan.FromMinutes(5), Guid.NewGuid())
             );
 
-            tree.AddItemAsPath("/Root/Node2/WhiteNode",
+            node2.AddChild("WhiteNode",
                 new Rgba32Resource("White", 255, 255, 255, 0),
                 new Metadata(DateTime.Now + TimeSpan.FromMinutes(6), Guid.NewGuid())
             );
 
+            // Print out all nodes
             foreach (var node in tree.EnumerateBreadthFirst())
             {
                 var output = node.Item switch
