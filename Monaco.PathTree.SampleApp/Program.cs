@@ -47,14 +47,16 @@ namespace Monaco.PathTree.SampleApp
             // Print out all nodes
             foreach (var node in tree.EnumerateBreadthFirst())
             {
-                var output = node.Item switch
+                var itemOutput = node.Item switch
                 {
                     StringResource stringResource => $"'{stringResource.Name}': '{stringResource.Contents}'",
                     Rgba32Resource rgba32Resource => $"'{rgba32Resource.Name}': RGBA ({rgba32Resource.R}, {rgba32Resource.G}, {rgba32Resource.B}, {rgba32Resource.A})",
                     Resource resource => $"'{resource.Name}'"
                 };
 
-                Console.WriteLine($"{node.PathKey} : '{node.Name}'\n\tItem: {output};\n\tMetadata: {node.Metadata.CreationTime}, {node.Metadata.Guid}");
+                Console.WriteLine($"{node.PathKey} : '{node.Name}'");
+                Console.WriteLine($"\tItem: {itemOutput}");
+                Console.WriteLine($"\tMetadata: {node.Metadata.CreationTime}, {node.Metadata.Guid}");
             }
         }
     }
