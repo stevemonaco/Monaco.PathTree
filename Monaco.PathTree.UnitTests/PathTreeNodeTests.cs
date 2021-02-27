@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using System.Collections.Generic;
-using Monaco.PathTree;
 using Monaco.PathTree.UnitTests.AssertHelpers;
 using NUnit.Framework;
 
@@ -39,10 +37,10 @@ namespace Monaco.PathTree.UnitTests
         }
 
         [Test]
-        public void AttachChild_AsExpected()
+        public void AttachChildNode_AsExpected()
         {
             var expected = ("TestItem5", 5);
-            parent.AttachChild(new PathTreeNode<int, EmptyMetadata>(expected.Item1, expected.Item2));
+            parent.AttachChildNode(new PathTreeNode<int, EmptyMetadata>(expected.Item1, expected.Item2));
 
             parent.TryGetChildNode(expected.Item1, out var node);
 
@@ -55,9 +53,9 @@ namespace Monaco.PathTree.UnitTests
         }
 
         [TestCase("SubItem3", 3)]
-        public void DetachChild_AsExpected(string name, int expectedItem)
+        public void DetachChildNode_AsExpected(string name, int expectedItem)
         {
-            var node = parent.DetachChild(name);
+            var node = parent.DetachChildNode(name);
             Assert.Multiple(() =>
             {
                 Assert.AreEqual(name, node.Name);
@@ -66,25 +64,25 @@ namespace Monaco.PathTree.UnitTests
         }
 
         [TestCase("SubItem2")]
-        public void RemoveChild_AsExpected(string name)
+        public void RemoveChildNode_AsExpected(string name)
         {
-            parent.RemoveChild(name);
-            Assert.IsFalse(parent.ContainsChild(name));
+            parent.RemoveChildNode(name);
+            Assert.IsFalse(parent.ContainsChildNode(name));
         }
 
         [TestCase("SubItem1")]
         [TestCase("SubItem2")]
         [TestCase("SubItem3")]
-        public void ContainsChild_Found_AsExpected(string name)
+        public void ContainsChildNode_Found_AsExpected(string name)
         {
-            Assert.IsTrue(parent.ContainsChild(name));
+            Assert.IsTrue(parent.ContainsChildNode(name));
         }
 
         [TestCase("SubItem18")]
         [TestCase("subitem1")]
-        public void ContainsChild_NotFound_AsExpected(string name)
+        public void ContainsChildNode_NotFound_AsExpected(string name)
         {
-            Assert.IsFalse(parent.ContainsChild(name));
+            Assert.IsFalse(parent.ContainsChildNode(name));
         }
 
         [TestCase("SubItem2", 2)]

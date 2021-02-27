@@ -48,30 +48,54 @@ namespace Monaco.PathTree
         /// </summary>
         /// <param name="path">The full path associated with the item</param>
         /// <param name="item">The item to be added</param>
-        public void AddItemAsPath(string path, TItem item, TMetadata metadata = default)
+        /// <param name="metadata">Metadata to associate with the path</param>
+        public PathTreeNode<TItem, TMetadata> AddItemAsPath(string path, TItem item, TMetadata metadata = default)
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(AddItemAsPath)}: parameter '{nameof(path)}' was null or empty");
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
 
             var parent = ResolveParent(path);
 
             if (parent is null)
-                throw new KeyNotFoundException($"{nameof(TryGetItem)}: could not find {nameof(path)} '{path}'");
+                ThrowHelper.ThrowNodeNotFound(path);
 
             var nodeName = path.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries).Last();
-            parent.AddChild(nodeName, item, metadata);
+            return parent.AddChild(nodeName, item, metadata);
         }
 
         /// <summary>
-        /// Tries to get the item stored at the specified path
+        /// Adds the item as a child of the specified path
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">The full path associated with the parent</param>
+        /// <param name="nodeName">Name of the node to add</param>
+        /// <param name="item">The item to be added</param>
+        /// <param name="metadata">Metadata to associate with the new node</param>
+        public PathTreeNode<TItem, TMetadata> AddItemToPath(string path, string nodeName, TItem item, TMetadata metadata = default)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
+
+            if (string.IsNullOrWhiteSpace(nodeName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
+
+            var parent = ResolveNode(path);
+
+            if (parent is null)
+                ThrowHelper.ThrowNodeNotFound(path);
+
+            return parent.AddChild(nodeName, item, metadata);
+        }
+
+        /// <summary>
+        /// Tries to get an existing item stored at the specified path
+        /// </summary>
+        /// <param name="path">The full path associated with the item</param>
         /// <param name="item"></param>
         /// <returns>True if successful, false if failed</returns>
         public bool TryGetItem(string path, out TItem item)
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(TryGetItem)}: parameter '{nameof(path)}' was null or empty");
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
 
             var node = ResolveNode(path);
             
@@ -81,21 +105,21 @@ namespace Monaco.PathTree
                 return true;
             }
 
-            item = default(TItem);
+            item = default;
             return false;
         }
 
         /// <summary>
-        /// Tries to get the item of a specific type stored at the specified path
+        /// Tries to get an existing item of a specific type stored at the specified path
         /// </summary>
         /// <typeparam name="U">Type of the item</typeparam>
-        /// <param name="path"></param>
+        /// <param name="path">The full path associated with the item</param>
         /// <param name="item"></param>
         /// <returns>True if successful, false if failed</returns>
         public bool TryGetItem<U>(string path, out U item) where U : TItem
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(TryGetItem)}: parameter '{nameof(path)}' was null or empty");
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
 
             var node = ResolveNode(path);
 
@@ -110,56 +134,62 @@ namespace Monaco.PathTree
         }
 
         /// <summary>
+        /// Tries to get an existing metadata stored at the specified path
+        /// </summary>
+        /// <param name="path">The full path associated with the item</param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        public bool TryGetMetadata(string path, out TMetadata metadata)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
+
+            var node = ResolveNode(path);
+
+            if (node is object)
+            {
+                metadata = node.Metadata;
+                return true;
+            }
+
+            metadata = default;
+            return false;
+        }
+
+        /// <summary>
         /// Tries to get the node contained at the specified location
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">The full path associated with the item</param>
         /// <param name="node"></param>
         /// <returns></returns>
         public bool TryGetNode(string path, out PathTreeNode<TItem, TMetadata> node)
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(TryGetNode)}: parameter '{nameof(path)}' was null or empty");
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
 
             node = ResolveNode(path);
 
             return node is object;
         }
 
-        //public bool TryGetNode<TDerived>(string path, out IPathTreeNode<TDerived> node) where TDerived : TValue
-        //{
-        //    if (string.IsNullOrWhiteSpace(path))
-        //        throw new ArgumentException($"{nameof(TryGetNode)}: parameter '{nameof(path)}' was null or empty");
-
-        //    var resolvedNode = ResolveNode(path);
-
-        //    if (resolvedNode is object)
-        //    {
-        //        node = (IPathTreeNode<TDerived>) resolvedNode;
-        //        return true;
-        //    }
-
-        //    node = default;
-        //    return false;
-        //}
-
         /// <summary>
         /// Removes the node at the specified location
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">The full path associated with the item</param>
         public void RemoveNode(string path)
         {
             if(string.IsNullOrWhiteSpace(path))
-                throw new ArgumentException($"{nameof(RemoveNode)}: parameter '{nameof(path)}' was null or empty");
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
 
             var removeNode = ResolveNode(path);
 
             if (removeNode is null)
-                throw new KeyNotFoundException($"RemoveNode was unable to locate {nameof(path)}");
+                ThrowHelper.ThrowNodeNotFound(path);
 
             if (removeNode.Parent is null)
-                throw new NullReferenceException();
+                ThrowHelper.ThrowParentNodeNotFound(path);
 
-            removeNode.Parent.RemoveChild(removeNode.Name);
+            removeNode.Parent.RemoveChildNode(removeNode.Name);
         }
 
         private PathTreeNode<TItem, TMetadata> ResolveNode(string absolutePath)

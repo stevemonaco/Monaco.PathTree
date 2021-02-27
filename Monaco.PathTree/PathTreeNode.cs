@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections;
 
 namespace Monaco.PathTree
 {
@@ -17,15 +16,12 @@ namespace Monaco.PathTree
         public IEnumerable<PathTreeNode<TItem, TMetadata>> ChildNodes => _children?.Values ?? Enumerable.Empty<PathTreeNode<TItem, TMetadata>>();
         public IEnumerable<TItem> ChildItems => _children?.Values.Select(x => x.Item) ?? Enumerable.Empty<TItem>();
 
-        public PathTreeNode(string name, TItem item)
+        public PathTreeNode(string rootNodeName, TItem item, TMetadata metadata = default)
         {
-            Name = name;
-            Item = item;
-        }
+            if (string.IsNullOrWhiteSpace(rootNodeName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(rootNodeName));
 
-        public PathTreeNode(string name, TItem item, TMetadata metadata)
-        {
-            Name = name;
+            Name = rootNodeName;
             Item = item;
             Metadata = metadata;
         }
@@ -38,92 +34,126 @@ namespace Monaco.PathTree
 
         public IEnumerable<string> Paths => this.SelfAndAncestors().Select(x => x.Name).Reverse();
 
-        public void AddChild(string name, TItem item, TMetadata metadata = default)
+        /// <summary>
+        /// Adds a child node created from parameters
+        /// </summary>
+        /// <param name="nodeName">Name of the node to add</param>
+        /// <param name="item">Item associated with node</param>
+        /// <param name="metadata">Metadata associated with node</param>
+        /// <returns>The node which was added</returns>
+        public PathTreeNode<TItem, TMetadata> AddChild(string nodeName, TItem item, TMetadata metadata = default)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException($"{nameof(AddChild)}: parameter '{nameof(name)}' was null or empty");
+            if (string.IsNullOrWhiteSpace(nodeName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
 
             if (_children is null)
                 _children = new Dictionary<string, PathTreeNode<TItem, TMetadata>>();
 
-            if (_children.ContainsKey(name))
-                throw new ArgumentException($"{nameof(AddChild)}: child element with {nameof(name)} '{name}' already exists");
+            if (_children.ContainsKey(nodeName))
+                ThrowHelper.ThrowNodeAlreadyExists(nodeName);
 
-            var node = new PathTreeNode<TItem, TMetadata>(name, item, metadata);
+            var node = new PathTreeNode<TItem, TMetadata>(nodeName, item, metadata);
             node.Parent = this;
-            _children.Add(name, node);
+            _children.Add(nodeName, node);
+
+            return node;
         }
 
-        public void AttachChild(PathTreeNode<TItem, TMetadata> node)
+        /// <summary>
+        /// Attaches an existing node as a child
+        /// </summary>
+        /// <param name="node">Node to attach</param>
+        public void AttachChildNode(PathTreeNode<TItem, TMetadata> node)
         {
-            if(node is null)
-                throw new ArgumentException($"{nameof(AttachChild)}: parameter '{nameof(node)}' was null or empty");
+            if (node is null)
+                ThrowHelper.ThrowArgumentNull(nameof(node));
 
             if (_children is null)
                 _children = new Dictionary<string, PathTreeNode<TItem, TMetadata>>();
 
             if (_children.ContainsKey(node.Name))
-                throw new ArgumentException($"{nameof(AttachChild)}: child element with {nameof(node.Name)} '{node.Name}' already exists");
+                ThrowHelper.ThrowNodeAlreadyExists(node.Name);
 
             node.Parent = this;
             _children.Add(node.Name, node);
         }
 
-        public PathTreeNode<TItem, TMetadata> DetachChild(string name)
+        /// <summary>
+        /// Detaches a child node by name
+        /// </summary>
+        /// <param name="nodeName">Name of the node to detach</param>
+        /// <returns></returns>
+        public PathTreeNode<TItem, TMetadata> DetachChildNode(string nodeName)
         {
-            if (name is null)
-                throw new ArgumentException($"{nameof(DetachChild)}: parameter '{nameof(name)}' was null or empty");
+            if (string.IsNullOrWhiteSpace(nodeName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
 
             if (_children is null)
-                throw new ArgumentException($"{nameof(DetachChild)}: child element with {nameof(name)} '{name}' does not exist");
+                ThrowHelper.ThrowNodeNotFound(nodeName);
 
-            if (_children.TryGetValue(name, out var node))
+            if (_children.TryGetValue(nodeName, out var node))
             {
                 node.Parent = null;
-                _children.Remove(name);
+                _children.Remove(nodeName);
                 return node;
             }
             else
-                throw new KeyNotFoundException($"{nameof(DetachChild)}: child element with {nameof(name)} '{name}' does not exist");
+            {
+                ThrowHelper.ThrowNodeNotFound(nodeName);
+                return null;
+            }
         }
 
-        public void RemoveChild(string name)
+        /// <summary>
+        /// Removes a child node by name
+        /// </summary>
+        /// <param name="nodeName">Name of the node to remove</param>
+        public void RemoveChildNode(string nodeName)
         {
-            if(name is null)
-                throw new ArgumentException($"{nameof(RemoveChild)}: parameter '{nameof(name)}' was null or empty");
+            if (string.IsNullOrWhiteSpace(nodeName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
 
             if (_children is null)
-                throw new KeyNotFoundException($"{nameof(RemoveChild)}: child element with {nameof(name)} '{name}' does not exist");
+                ThrowHelper.ThrowNodeNotFound(nodeName);
 
-            if (_children.ContainsKey(name))
-                _children.Remove(name);
+            if (_children.ContainsKey(nodeName))
+                _children.Remove(nodeName);
             else
-                throw new KeyNotFoundException($"{nameof(RemoveChild)}: child element with {nameof(name)} '{name}' does not exist");
+                ThrowHelper.ThrowNodeNotFound(nodeName);
         }
 
-        public void RenameChild(string oldName, string newName)
+        /// <summary>
+        /// Renames a child node
+        /// </summary>
+        /// <param name="name">Name of the existing child node</param>
+        /// <param name="newName">New name</param>
+        public void RenameChild(string name, string newName)
         {
-            if (oldName is null)
-                throw new ArgumentNullException($"{nameof(RenameChild)}: parameter '{nameof(oldName)}' was null or empty");
+            if (string.IsNullOrWhiteSpace(name))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
 
-            if (newName is null)
-                throw new ArgumentNullException($"{nameof(RenameChild)}: parameter '{nameof(newName)}' was null or empty");
+            if (string.IsNullOrWhiteSpace(newName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(newName));
 
             if (_children is null)
-                throw new KeyNotFoundException($"{nameof(RenameChild)}: child element with {nameof(oldName)} '{oldName}' does not exist");
+                ThrowHelper.ThrowNodeNotFound(name);
 
-            if (_children.TryGetValue(oldName, out var node))
+            if (_children.TryGetValue(name, out var node))
             {
                 node.Rename(newName);
             }
             else
-                throw new KeyNotFoundException($"{nameof(RemoveChild)}: child element with {nameof(oldName)} '{oldName}' does not exist");
+                ThrowHelper.ThrowNodeNotFound(name);
         }
 
+        /// <summary>
+        /// Renames this node
+        /// </summary>
+        /// <param name="name">New name</param>
         public void Rename(string name)
         {
-            if (name is null)
-                throw new ArgumentException($"{nameof(Rename)}: parameter '{nameof(name)}' was null or empty");
+            if (string.IsNullOrWhiteSpace(name))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
 
             var parent = Parent;
 
@@ -133,16 +163,21 @@ namespace Monaco.PathTree
             }
             else
             {
-                parent.DetachChild(Name);
+                parent.DetachChildNode(Name);
                 Name = name;
-                parent.AttachChild(this);
+                parent.AttachChildNode(this);
             }
         }
 
-        public bool ContainsChild(string name)
+        /// <summary>
+        /// Determines if this node contains a child with the specified name
+        /// </summary>
+        /// <param name="name">Name of child node</param>
+        /// <returns>True if contained, false if not contained</returns>
+        public bool ContainsChildNode(string name)
         {
-            if (name is null)
-                throw new ArgumentException($"{nameof(ContainsChild)}: parameter '{nameof(name)}' was null or empty");
+            if (string.IsNullOrWhiteSpace(name))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
 
             if (_children is null)
                 return false;
@@ -150,10 +185,16 @@ namespace Monaco.PathTree
             return _children.ContainsKey(name);
         }
 
+        /// <summary>
+        /// Tries to get a child node by name
+        /// </summary>
+        /// <param name="name">Name of child node to get</param>
+        /// <param name="node"></param>
+        /// <returns>True if found, false if not found</returns>
         public bool TryGetChildNode(string name, out PathTreeNode<TItem, TMetadata> node)
         {
-            if(name is null)
-                throw new ArgumentException($"{nameof(TryGetChildNode)}: parameter '{nameof(name)}' was null or empty");
+            if(string.IsNullOrWhiteSpace(name))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
 
             node = default;
 
@@ -165,24 +206,5 @@ namespace Monaco.PathTree
 
             return false;
         }
-
-        //public bool TryGetChildNode<TDerivedItem>(string name, out PathTreeNode<TDerivedItem, TMetadata> node) where TDerivedItem : TItem
-        //{
-        //    if (name is null)
-        //        throw new ArgumentException($"{nameof(TryGetChildNode)}: parameter '{nameof(name)}' was null or empty");
-
-        //    node = default;
-
-        //    if (_children is null)
-        //        return false;
-
-        //    if (_children.TryGetValue(name, out var resultNode))
-        //    {
-        //        node = (PathTreeNode<TDerivedItem, TMetadata>) resultNode;
-        //        return true;
-        //    }
-
-        //    return false;
-        //}
     }
 }
