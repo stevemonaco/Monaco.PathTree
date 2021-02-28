@@ -8,7 +8,7 @@ namespace Monaco.PathTree.UnitTests
     class PathNodeTests
     {
         private PathNode<int, EmptyMetadata> parent;
-        private readonly (string, int)[] nodeChildren = new (string, int)[]
+        private readonly (string, int)[] _nodeChildren = new (string, int)[]
         {
             ("SubItem1", 1), ("SubItem2", 2), ("SubItem3", 3)
         };
@@ -17,7 +17,7 @@ namespace Monaco.PathTree.UnitTests
         public void Setup()
         {
             parent = new PathNode<int, EmptyMetadata>("parent", -1);
-            foreach (var item in nodeChildren)
+            foreach (var item in _nodeChildren)
                 parent.AddChild(item.Item1, item.Item2);
         }
 
@@ -103,7 +103,7 @@ namespace Monaco.PathTree.UnitTests
         public void ChildNodes_ReturnsExpected()
         {
             var actual = parent.ChildNodes.Select(x => (x.Name, x.Item)).ToList();
-            ListAssert.ContainsSameItems(nodeChildren, actual);
+            ListAssert.ContainsSameItems(_nodeChildren, actual);
         }
 
         [TestCase("SubItem2", "SubItem5")]

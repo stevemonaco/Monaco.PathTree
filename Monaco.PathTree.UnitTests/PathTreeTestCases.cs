@@ -5,12 +5,13 @@ namespace Monaco.PathTree.UnitTests
 {
     public class PathTreeTestCases
     {
-        private static PathTree<int> BuildRootOnlyTree()
+        private static PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata> BuildRootOnlyTree()
         {
-            return new PathTree<int>("Root", -1);
+            var root = new PathNode<int, EmptyMetadata>("Root", -1);
+            return new PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata>(root);
         }
 
-        private static PathTree<int> BuildMultiLayerTree()
+        private static PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata> BuildMultiLayerTree()
         {
             (string, int)[] testTreeChildren = new (string, int)[]
             {
@@ -18,7 +19,8 @@ namespace Monaco.PathTree.UnitTests
                 ("/Root/Folder2", 2), ("/Root/Folder2/Folder3", 3), ("/Root/Folder2/Folder3/Item3", 5)
             };
 
-            var tree = new PathTree<int>("Root", -1);
+            var root = new PathNode<int, EmptyMetadata>("Root", -1);
+            var tree = new PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata>(root);
 
             foreach (var item in testTreeChildren)
                 tree.AddItemAsPath(item.Item1, item.Item2);

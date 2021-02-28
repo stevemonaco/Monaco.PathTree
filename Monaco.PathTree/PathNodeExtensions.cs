@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Monaco.PathTree.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,7 +14,8 @@ namespace Monaco.PathTree
     /// </remarks>
     public static class PathNodeExtensions
     {
-        public static IEnumerable<PathNode<TItem, TMetadata>> SelfAndAncestors<TItem, TMetadata>(this PathNode<TItem, TMetadata> node)
+        public static IEnumerable<TNode> SelfAndAncestors<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : PathNodeBase<TNode, TItem, TMetadata>
         {
             var nodeVisitor = node;
 
@@ -24,7 +26,8 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<PathNode<TItem, TMetadata>> Ancestors<TItem, TMetadata>(this PathNode<TItem, TMetadata> node)
+        public static IEnumerable<TNode> Ancestors<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : PathNodeBase<TNode, TItem, TMetadata>
         {
             var nodeVisitor = node.Parent;
 
@@ -35,9 +38,10 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<PathNode<TItem, TMetadata>> SelfAndDescendantsDepthFirst<TItem, TMetadata>(this PathNode<TItem, TMetadata> node)
+        public static IEnumerable<TNode> SelfAndDescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : PathNodeBase<TNode, TItem, TMetadata>
         {
-            var nodeStack = new Stack<PathNode<TItem, TMetadata>>();
+            var nodeStack = new Stack<TNode>();
 
             nodeStack.Push(node);
 
@@ -50,9 +54,10 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<PathNode<TItem, TMetadata>> SelfAndDescendantsBreadthFirst<TItem, TMetadata>(this PathNode<TItem, TMetadata> node)
+        public static IEnumerable<TNode> SelfAndDescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : PathNodeBase<TNode, TItem, TMetadata>
         {
-            var nodeQueue = new Queue<PathNode<TItem, TMetadata>>();
+            var nodeQueue = new Queue<TNode>();
 
             nodeQueue.Enqueue(node);
 
@@ -65,9 +70,10 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<PathNode<TItem, TMetadata>> DescendantsDepthFirst<TItem, TMetadata>(this PathNode<TItem, TMetadata> node)
+        public static IEnumerable<TNode> DescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : PathNodeBase<TNode, TItem, TMetadata>
         {
-            var nodeStack = new Stack<PathNode<TItem, TMetadata>>(node.ChildNodes);
+            var nodeStack = new Stack<TNode>(node.ChildNodes);
 
             while (nodeStack.Count > 0)
             {
@@ -78,9 +84,10 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<PathNode<TItem, TMetadata>> DescendantsBreadthFirst<TItem, TMetadata>(this PathNode<TItem, TMetadata> node)
+        public static IEnumerable<TNode> DescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : PathNodeBase<TNode, TItem, TMetadata>
         {
-            var nodeQueue = new Queue<PathNode<TItem, TMetadata>>();
+            var nodeQueue = new Queue<TNode>();
 
             nodeQueue.Enqueue(node);
 

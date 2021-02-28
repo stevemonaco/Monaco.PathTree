@@ -1,15 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using Monaco.PathTree.Abstractions;
+using System.Collections.Generic;
 
 namespace Monaco.PathTree
 {
     public static class PathTreeExtensions
     {
-        public static IEnumerable<PathNode<TItem, TMetadata>> EnumerateDepthFirst<TItem, TMetadata>
-            (this IPathTree<TItem, TMetadata> tree) =>
-            tree.Root.SelfAndDescendantsDepthFirst();
+        public static IEnumerable<TNode> EnumerateDepthFirst<TNode, TItem, TMetadata>
+            (this IPathTree<TNode, TItem, TMetadata> tree)
+            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+        {
+            return tree.Root.SelfAndDescendantsDepthFirst<TNode, TItem, TMetadata>();
+        }
 
-        public static IEnumerable<PathNode<TItem, TMetadata>> EnumerateBreadthFirst<TItem, TMetadata>
-            (this IPathTree<TItem, TMetadata> tree) =>
-            tree.Root.SelfAndDescendantsBreadthFirst();
+        public static IEnumerable<TNode> EnumerateBreadthFirst<TNode, TItem, TMetadata>
+            (this IPathTree<TNode, TItem, TMetadata> tree)
+            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+        {
+            return tree.Root.SelfAndDescendantsBreadthFirst<TNode, TItem, TMetadata>();
+        }
     }
 }
