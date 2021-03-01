@@ -1,6 +1,6 @@
 ﻿namespace Monaco.PathTree
 {
-    public struct EmptyMetadata
+    public readonly struct EmptyMetadata
     {
     }
 }

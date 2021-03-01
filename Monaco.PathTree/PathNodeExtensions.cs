@@ -15,7 +15,7 @@ namespace Monaco.PathTree
     public static class PathNodeExtensions
     {
         public static IEnumerable<TNode> SelfAndAncestors<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
             var nodeVisitor = node;
 
@@ -27,7 +27,7 @@ namespace Monaco.PathTree
         }
 
         public static IEnumerable<TNode> Ancestors<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
             var nodeVisitor = node.Parent;
 
@@ -39,7 +39,7 @@ namespace Monaco.PathTree
         }
 
         public static IEnumerable<TNode> SelfAndDescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
             var nodeStack = new Stack<TNode>();
 
@@ -55,7 +55,7 @@ namespace Monaco.PathTree
         }
 
         public static IEnumerable<TNode> SelfAndDescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
             var nodeQueue = new Queue<TNode>();
 
@@ -71,7 +71,7 @@ namespace Monaco.PathTree
         }
 
         public static IEnumerable<TNode> DescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
             var nodeStack = new Stack<TNode>(node.ChildNodes);
 
@@ -85,7 +85,7 @@ namespace Monaco.PathTree
         }
 
         public static IEnumerable<TNode> DescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
             var nodeQueue = new Queue<TNode>();
 

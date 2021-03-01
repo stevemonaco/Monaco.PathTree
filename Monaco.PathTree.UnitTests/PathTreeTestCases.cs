@@ -5,29 +5,6 @@ namespace Monaco.PathTree.UnitTests
 {
     public class PathTreeTestCases
     {
-        private static PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata> BuildRootOnlyTree()
-        {
-            var root = new PathNode<int, EmptyMetadata>("Root", -1);
-            return new PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata>(root);
-        }
-
-        private static PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata> BuildMultiLayerTree()
-        {
-            (string, int)[] testTreeChildren = new (string, int)[]
-            {
-                ("/Root/Folder1", 1), ("/Root/Folder1/Item1", 15), ("/Root/Folder1/Item2", 25),
-                ("/Root/Folder2", 2), ("/Root/Folder2/Folder3", 3), ("/Root/Folder2/Folder3/Item3", 5)
-            };
-
-            var root = new PathNode<int, EmptyMetadata>("Root", -1);
-            var tree = new PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata>(root);
-
-            foreach (var item in testTreeChildren)
-                tree.AddItemAsPath(item.Item1, item.Item2);
-
-            return tree;
-        }
-
         public static IEnumerable<TestCaseData> AddItemAsPathCases()
         {
             var rootItemList = new List<(string, int)> { ("/Root", -1) };
@@ -62,19 +39,19 @@ namespace Monaco.PathTree.UnitTests
 
         public static IEnumerable<TestCaseData> AddItemToPathCases()
         {
-            var tree = BuildMultiLayerTree();
+            var tree = TestTreeBuilder.BuildMultiLayerTree();
             yield return new TestCaseData(tree, "/Root/Folder1/Item1", "/Root/Folder1/Item1/TestNode", "TestNode", 8);
 
-            tree = BuildMultiLayerTree();
+            tree = TestTreeBuilder.BuildMultiLayerTree();
             yield return new TestCaseData(tree, "/Root", "/Root/TestNode", "TestNode", 8);
         }
 
         public static IEnumerable<TestCaseData> AddItemToPathDuplicateCases()
         {
-            var tree = BuildMultiLayerTree();
+            var tree = TestTreeBuilder.BuildMultiLayerTree();
             yield return new TestCaseData(tree, "/Root/Folder1", "Item1");
 
-            tree = BuildMultiLayerTree();
+            tree = TestTreeBuilder.BuildMultiLayerTree();
             yield return new TestCaseData(tree, "/Root", "Folder1");
         }
 
@@ -127,30 +104,30 @@ namespace Monaco.PathTree.UnitTests
 
         public static IEnumerable<TestCaseData> PathKeyCases()
         {
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder1", "/Root/Folder1");
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder1/Item2/", "/Root/Folder1/Item2");
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder2/Folder3/Item3", "/Root/Folder2/Folder3/Item3");
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder1", "/Root/Folder1");
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder1/Item2/", "/Root/Folder1/Item2");
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder2/Folder3/Item3", "/Root/Folder2/Folder3/Item3");
         }
 
         public static IEnumerable<TestCaseData> TryGetItemCases()
         {
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root", -1);
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder2", 2);
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder2", 2);
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder2/Folder3/Item3", 5);
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder2/Folder3/Item3", 5);
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root", -1);
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder2", 2);
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder2", 2);
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder2/Folder3/Item3", 5);
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder2/Folder3/Item3", 5);
         }
 
         public static IEnumerable<TestCaseData> RemoveNodeCases()
         {
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder1/Item2");
-            yield return new TestCaseData(BuildMultiLayerTree(), "/Root/Folder1");
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder1/Item2");
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), "/Root/Folder1");
         }
 
         public static IEnumerable<TestCaseData> CountCases()
         {
-            yield return new TestCaseData(BuildMultiLayerTree(), 7);
-            yield return new TestCaseData(BuildRootOnlyTree(), 1);
+            yield return new TestCaseData(TestTreeBuilder.BuildMultiLayerTree(), 7);
+            yield return new TestCaseData(TestTreeBuilder.BuildRootOnlyTree(), 1);
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Monaco.PathTree;
 using NUnit.Framework;
 
 namespace Monaco.PathTree.UnitTests.AssertHelpers

@@ -17,7 +17,10 @@ namespace Monaco.PathTree.Abstractions
         TNode AddChild(string nodeName, TItem item, TMetadata metadata = default);
         void AttachChildNode(TNode node);
         bool ContainsChildNode(string name);
+
+        void Detach();
         TNode DetachChildNode(string nodeName);
+
         void RemoveChildNode(string nodeName);
         void Rename(string name);
         void RenameChild(string name, string newName);

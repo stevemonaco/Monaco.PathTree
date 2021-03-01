@@ -68,6 +68,66 @@ namespace Monaco.PathTree.UnitTests
             Assert.Throws<ArgumentException>(() => tree.AddItemToPath(parentPath, nodeName, 5));
         }
 
+        [TestCase("/Root/Folder1")]
+        public void AttachNodeToPath_AsExpected(string addPath)
+        {
+            var tree = TestTreeBuilder.BuildMultiLayerTree();
+            var node = new PathNode<int, EmptyMetadata>("TestNode5", 15);
+
+            tree.AttachNodeToPath(addPath, node);
+
+            var result = tree.TryGetNode(addPath, out _);
+
+            Assert.IsTrue(result);
+        }
+
+        [TestCase("/Root/Folder1")]
+        public void AttachNodeToPath_NodeAlreadyExists_ThrowsArgumentException(string addPath)
+        {
+            var tree = TestTreeBuilder.BuildMultiLayerTree();
+            var node = new PathNode<int, EmptyMetadata>("Item1", 15);
+
+            Assert.Throws<ArgumentException>(() => 
+                tree.AttachNodeAsPath(addPath, node)
+            );
+        }
+
+        [TestCase("/Root/Folder1/TestNode")]
+        public void AttachNodeAsPath_AsExpected(string addPath)
+        {
+            var tree = TestTreeBuilder.BuildMultiLayerTree();
+            var node = new PathNode<int, EmptyMetadata>("TestNode", 15);
+
+            tree.AttachNodeAsPath(addPath, node);
+            var result = tree.TryGetNode(addPath, out _);
+
+            Assert.IsTrue(result);
+        }
+
+        [TestCase("/Root/Folder1/TestNode")]
+        public void AttachNodeAsPath_RequiringNodeRename_Successful(string addPath)
+        {
+            var tree = TestTreeBuilder.BuildMultiLayerTree();
+            var node = new PathNode<int, EmptyMetadata>("MismatchingName", 15);
+
+            tree.AttachNodeAsPath(addPath, node);
+            var result = tree.TryGetNode(addPath, out _);
+
+            Assert.IsTrue(result);
+        }
+
+        [TestCase("/Root/Folder1/Item1")]
+        [TestCase("/Root/Folder1/Item2")]
+        public void AttachNodeAsPath_NodeAlreadyExists_ThrowsArgumentException(string addPath)
+        {
+            var tree = TestTreeBuilder.BuildMultiLayerTree();
+            var node = new PathNode<int, EmptyMetadata>("Item1", 15);
+
+            Assert.Throws<ArgumentException>(() =>
+                tree.AttachNodeAsPath(addPath, node)
+            );
+        }
+
         [TestCaseSource(typeof(PathTreeTestCases), nameof(PathTreeTestCases.TryGetItemCases))]
         public void TryGetItem_AsExpected(PathTree<PathNode<int, EmptyMetadata>, int, EmptyMetadata> tree, string path, int expected)
         {

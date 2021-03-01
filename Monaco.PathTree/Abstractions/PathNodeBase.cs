@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Monaco.PathTree.Abstractions
 {
@@ -78,6 +77,9 @@ namespace Monaco.PathTree.Abstractions
             if (_children.ContainsKey(node.Name))
                 ThrowHelper.ThrowNodeAlreadyExists(node.Name);
 
+            if (node.Parent is object)
+                ThrowHelper.ThrowNodeIsAlreadyAttached(node.Name, node.PathKey);
+
             node.Parent = (TNode) this;
             _children.Add(node.Name, node);
         }
@@ -97,14 +99,14 @@ namespace Monaco.PathTree.Abstractions
 
             if (_children.TryGetValue(nodeName, out var node))
             {
-                node.Parent = null;
+                node.Parent = default;
                 _children.Remove(nodeName);
                 return node;
             }
             else
             {
                 ThrowHelper.ThrowNodeNotFound(nodeName);
-                return null;
+                return default;
             }
         }
 
@@ -148,6 +150,15 @@ namespace Monaco.PathTree.Abstractions
             }
             else
                 ThrowHelper.ThrowNodeNotFound(name);
+        }
+
+        /// <summary>
+        /// Detaches this node from its parent, if parented
+        /// </summary>
+        public void Detach()
+        {
+            if (Parent is object)
+                Parent.DetachChildNode(Name);
         }
 
         /// <summary>

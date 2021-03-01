@@ -63,6 +63,18 @@ namespace Monaco.PathTree.UnitTests
             });
         }
 
+        [TestCase("/Root/Folder1", "/Root/Folder1")]
+        [TestCase("/Root/Folder1", "/Root/Folder1/Item2")]
+        public void Detach_NodeAndChildrenDetached(string pathToRemove, string removedNodePathToTest)
+        {
+            var tree = TestTreeBuilder.BuildMultiLayerTree();
+            tree.TryGetNode(pathToRemove, out var node);
+            node.Detach();
+
+            var result = tree.TryGetNode(removedNodePathToTest, out var removedNode);
+            Assert.IsFalse(result, $"Unexpected located node '{removedNodePathToTest}' after '{pathToRemove}' was removed");
+        }
+
         [TestCase("SubItem2")]
         public void RemoveChildNode_AsExpected(string name)
         {

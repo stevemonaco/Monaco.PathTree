@@ -7,14 +7,14 @@ namespace Monaco.PathTree
     {
         public static IEnumerable<TNode> EnumerateDepthFirst<TNode, TItem, TMetadata>
             (this IPathTree<TNode, TItem, TMetadata> tree)
-            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
             return tree.Root.SelfAndDescendantsDepthFirst<TNode, TItem, TMetadata>();
         }
 
         public static IEnumerable<TNode> EnumerateBreadthFirst<TNode, TItem, TMetadata>
             (this IPathTree<TNode, TItem, TMetadata> tree)
-            where TNode : PathNodeBase<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
             return tree.Root.SelfAndDescendantsBreadthFirst<TNode, TItem, TMetadata>();
         }

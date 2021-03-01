@@ -37,9 +37,18 @@ namespace Monaco.PathTree
 
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowNodeIsAlreadyAttached(string nodeName, string nodePath, [CallerMemberName] string callerName = "")
+        {
+            throw new InvalidOperationException($"'{callerName}': Node '{nodeName}' is already attached to the tree at '{nodePath}'");
+        }
+
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ThrowParentNodeNotFound(string path, [CallerMemberName] string callerName = "")
         {
             throw new KeyNotFoundException($"'{callerName}': Parent node of '{path}' does not exist");
         }
+
+
     }
 }

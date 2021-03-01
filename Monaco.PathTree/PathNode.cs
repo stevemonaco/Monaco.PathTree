@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Monaco.PathTree.Abstractions;
+﻿using Monaco.PathTree.Abstractions;
 
 namespace Monaco.PathTree
 {
-    public class PathNode<TItem> : PathNodeBase<PathNode<TItem, EmptyMetadata>, TItem, EmptyMetadata>
+    public sealed class PathNode<TItem> : PathNodeBase<PathNode<TItem, EmptyMetadata>, TItem, EmptyMetadata>
     {
         public PathNode(string rootNodeName, TItem item, EmptyMetadata metadata = default) :
             base(rootNodeName, item, metadata)

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Monaco.PathTree.Abstractions
 {
     public abstract class PathTreeBase<TNode, TItem, TMetadata> : IPathTree<TNode, TItem, TMetadata>
-        where TNode : PathNodeBase<TNode, TItem, TMetadata>
+        where TNode : IPathNode<TNode, TItem, TMetadata>
     {
         private TNode _root;
         public TNode Root
@@ -16,7 +15,7 @@ namespace Monaco.PathTree.Abstractions
             {
                 _root = value;
                 if (_root is object)
-                    _root.Parent = null;
+                    _root.Parent = default;
             }
         }
 
@@ -71,6 +70,49 @@ namespace Monaco.PathTree.Abstractions
         }
 
         /// <summary>
+        /// Attaches the node as the specified path if the parent exists and renames the node if necessary
+        /// </summary>
+        /// <param name="path">The full path associated with the node</param>
+        /// <param name="node">The node to be attached</param>
+        public virtual void AttachNodeAsPath(string path, TNode node)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
+
+            var nodeNames = SplitPath(path);
+            var parent = Resolve(nodeNames.Take(nodeNames.Count - 1).ToList());
+            var nodeName = nodeNames.Last();
+
+            if (parent is null)
+                ThrowHelper.ThrowNodeNotFound(path);
+
+            node.Detach();
+            node.Rename(nodeName);
+            parent.AttachChildNode(node);
+        }
+
+        /// <summary>
+        /// Attaches the node as a child of the specified path
+        /// </summary>
+        /// <param name="path">The full path associated with the parent</param>
+        /// <param name="nodeName">Name of the node to add</param>
+        /// <param name="item">The item to be added</param>
+        /// <param name="metadata">Metadata to associate with the new node</param>
+        public virtual void AttachNodeToPath(string path, TNode node)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
+
+            var parent = ResolveNode(path);
+
+            if (parent is null)
+                ThrowHelper.ThrowNodeNotFound(path);
+
+            node.Detach();
+            parent.AttachChildNode(node);
+        }
+
+        /// <summary>
         /// Tries to get an existing item stored at the specified path
         /// </summary>
         /// <param name="path">The full path associated with the item</param>
@@ -109,7 +151,7 @@ namespace Monaco.PathTree.Abstractions
 
             if (node is object)
             {
-                item = (TDerivedItem)node.Item;
+                item = (TDerivedItem) node.Item;
                 return true;
             }
 
@@ -133,6 +175,30 @@ namespace Monaco.PathTree.Abstractions
             if (node is object)
             {
                 metadata = node.Metadata;
+                return true;
+            }
+
+            metadata = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get an existing metadata stored at the specified path
+        /// </summary>
+        /// <param name="path">The full path associated with the item</param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        public virtual bool TryGetMetadata<TDerivedMetadata>(string path, out TMetadata metadata)
+            where TDerivedMetadata : TMetadata
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
+
+            var node = ResolveNode(path);
+
+            if (node is object)
+            {
+                metadata = (TDerivedMetadata) node.Metadata;
                 return true;
             }
 
@@ -176,16 +242,19 @@ namespace Monaco.PathTree.Abstractions
             removeNode.Parent.RemoveChildNode(removeNode.Name);
         }
 
+        protected virtual IList<string> SplitPath(string absolutePath) =>
+            absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+
         protected virtual TNode ResolveNode(string absolutePath)
         {
-            var nodeNames = absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+            var nodeNames = SplitPath(absolutePath);
             return Resolve(nodeNames);
         }
 
         protected virtual TNode ResolveParent(string absolutePath)
         {
-            var nodeNames = absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
-            var parentNodeNames = nodeNames.Take(nodeNames.Length - 1).ToList();
+            var nodeNames = SplitPath(absolutePath);
+            var parentNodeNames = nodeNames.Take(nodeNames.Count - 1).ToList();
 
             return Resolve(parentNodeNames);
         }

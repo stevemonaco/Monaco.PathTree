@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Monaco.PathTree.SampleApp
 {
@@ -79,19 +78,26 @@ namespace Monaco.PathTree.SampleApp
             var tree = new ResourceTree(rootNode);
 
             // Using the built-in PathTree<...> with custom nodes is also an option
-            //var tree = new PathTree<ResourceNode, Resource, Metadata>(rootNode);
+            // var tree = new PathTree<ResourceNode, Resource, Metadata>(rootNode);
 
-            // Add nodes using absolute paths
-            tree.AddItemAsPath("/Root/Node1",
+            // Add nodes by creating nodes and attaching them
+            // These will be typed as StringNode
+            var node1 = new StringNode("Node1",
                 new StringResource("Resource 1a", "This is the first child node"),
                 new Metadata(DateTime.Now + TimeSpan.FromMinutes(1), Guid.NewGuid())
             );
+            node1.NodeCountBeforeAddition = tree.Count();
+            rootNode.AttachChildNode(node1);
 
-            var node2 = tree.AddItemAsPath("/Root/Node2",
-                new StringResource("Resource 1b", "This is the second child node"),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(2), Guid.NewGuid())
+            var node2 = new StringNode("Node2",
+                new StringResource("Resource 1a", "This is the first child node"),
+                new Metadata(DateTime.Now + TimeSpan.FromMinutes(1), Guid.NewGuid())
             );
+            node2.NodeCountBeforeAddition = tree.Count();
+            rootNode.AttachChildNode(node2);
 
+            // Add items directly as a path
+            // These will be ResourceNodes by default
             tree.AddItemAsPath("/Root/Node1/SlateBlueNode",
                 new Rgba32Resource("Slate Blue", 113, 113, 198, 0),
                 new Metadata(DateTime.Now + TimeSpan.FromMinutes(3), Guid.NewGuid())
@@ -103,6 +109,7 @@ namespace Monaco.PathTree.SampleApp
             );
 
             // Add child nodes directly to a node
+            // These will be ResourceNodes by default
             node2.AddChild("BlueNode",
                 new Rgba32Resource("Blue", 0, 0, 255, 0),
                 new Metadata(DateTime.Now + TimeSpan.FromMinutes(5), Guid.NewGuid())
@@ -116,6 +123,12 @@ namespace Monaco.PathTree.SampleApp
             // Print out all nodes
             foreach (var node in tree.EnumerateBreadthFirst())
             {
+                var nodeOutput = node switch
+                {
+                    StringNode stringNode => $"{node.PathKey} : '{node.Name}' '{node.GetType().Name}' '{stringNode.NodeCountBeforeAddition}'",
+                    ResourceNode resourceNode => $"{node.PathKey} : '{node.Name}' '{node.GetType().Name}'"
+                };
+
                 var itemOutput = node.Item switch
                 {
                     StringResource stringResource => $"'{stringResource.Name}': '{stringResource.Contents}'",
@@ -123,7 +136,7 @@ namespace Monaco.PathTree.SampleApp
                     Resource resource => $"'{resource.Name}'"
                 };
 
-                Console.WriteLine($"{node.PathKey} : '{node.Name}'");
+                Console.WriteLine(nodeOutput);
                 Console.WriteLine($"\tItem: {itemOutput}");
                 Console.WriteLine($"\tMetadata: {node.Metadata.CreationTime}, {node.Metadata.Guid}");
             }
