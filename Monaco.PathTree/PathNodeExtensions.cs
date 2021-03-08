@@ -1,21 +1,23 @@
-﻿using System;
+﻿using Monaco.PathTree.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Monaco.PathTree
 {
     /// <summary>
-    /// Extension methods that allow iteration over the IPathTreeNode
+    /// Extension methods that allow iteration over PathNode
     /// </summary>
     /// <returns></returns>
     /// <remarks>Idea adapted from https://www.benjamin.pizza/posts/2017-11-13-recursion-without-recursion.html 
     /// Implementation adapted from https://blogs.msdn.microsoft.com/wesdyer/2007/03/23/all-about-iterators/
     /// </remarks>
-    public static class PathTreeNodeExtensions
+    public static class PathNodeExtensions
     {
-        public static IEnumerable<IPathTreeNode<T>> SelfAndAncestors<T>(this IPathTreeNode<T> node)
+        public static IEnumerable<TNode> SelfAndAncestors<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
-            IPathTreeNode<T> nodeVisitor = node;
+            var nodeVisitor = node;
 
             while (nodeVisitor != null)
             {
@@ -24,9 +26,10 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<IPathTreeNode<T>> Ancestors<T>(this IPathTreeNode<T> node)
+        public static IEnumerable<TNode> Ancestors<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
-            IPathTreeNode<T> nodeVisitor = node.Parent;
+            var nodeVisitor = node.Parent;
 
             while (nodeVisitor != null)
             {
@@ -35,9 +38,10 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<IPathTreeNode<T>> SelfAndDescendantsDepthFirst<T>(this IPathTreeNode<T> node)
+        public static IEnumerable<TNode> SelfAndDescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
-            var nodeStack = new Stack<IPathTreeNode<T>>();
+            var nodeStack = new Stack<TNode>();
 
             nodeStack.Push(node);
 
@@ -45,14 +49,15 @@ namespace Monaco.PathTree
             {
                 var popNode = nodeStack.Pop();
                 yield return popNode;
-                foreach (var child in popNode.Children)
+                foreach (var child in popNode.ChildNodes)
                     nodeStack.Push(child);
             }
         }
 
-        public static IEnumerable<IPathTreeNode<T>> SelfAndDescendantsBreadthFirst<T>(this IPathTreeNode<T> node)
+        public static IEnumerable<TNode> SelfAndDescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
-            var nodeQueue = new Queue<IPathTreeNode<T>>();
+            var nodeQueue = new Queue<TNode>();
 
             nodeQueue.Enqueue(node);
 
@@ -60,27 +65,29 @@ namespace Monaco.PathTree
             {
                 var dequeueNode = nodeQueue.Dequeue();
                 yield return dequeueNode;
-                foreach (var child in dequeueNode.Children)
+                foreach (var child in dequeueNode.ChildNodes)
                     nodeQueue.Enqueue(child);
             }
         }
 
-        public static IEnumerable<IPathTreeNode<T>> DescendantsDepthFirst<T>(this IPathTreeNode<T> node)
+        public static IEnumerable<TNode> DescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
-            var nodeStack = new Stack<IPathTreeNode<T>>(node.Children);
+            var nodeStack = new Stack<TNode>(node.ChildNodes);
 
             while (nodeStack.Count > 0)
             {
                 var popNode = nodeStack.Pop();
                 yield return popNode;
-                foreach (var child in popNode.Children)
+                foreach (var child in popNode.ChildNodes)
                     nodeStack.Push(child);
             }
         }
 
-        public static IEnumerable<IPathTreeNode<T>> DescendantsBreadthFirst<T>(this IPathTreeNode<T> node)
+        public static IEnumerable<TNode> DescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
+            where TNode : IPathNode<TNode, TItem, TMetadata>
         {
-            var nodeQueue = new Queue<IPathTreeNode<T>>();
+            var nodeQueue = new Queue<TNode>();
 
             nodeQueue.Enqueue(node);
 
@@ -88,7 +95,7 @@ namespace Monaco.PathTree
             {
                 var dequeueNode = nodeQueue.Dequeue();
                 yield return dequeueNode;
-                foreach (var child in dequeueNode.Children)
+                foreach (var child in dequeueNode.ChildNodes)
                     nodeQueue.Enqueue(child);
             }
         }
