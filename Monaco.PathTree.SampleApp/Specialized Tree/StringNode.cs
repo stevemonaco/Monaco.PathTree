@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Monaco.PathTree.SampleApp
 {
@@ -14,8 +10,8 @@ namespace Monaco.PathTree.SampleApp
         /// </summary>
         public int NodeCountBeforeAddition { get; set; }
 
-        public StringNode(string nodeName, Resource resource, Metadata metadata = null) 
-            : base(nodeName, resource, metadata)
+        public StringNode(string nodeName, Resource resource, DateTime creationTime) 
+            : base(nodeName, resource, creationTime)
         {
         }
     }

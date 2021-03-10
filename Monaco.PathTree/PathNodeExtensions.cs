@@ -14,8 +14,8 @@ namespace Monaco.PathTree
     /// </remarks>
     public static class PathNodeExtensions
     {
-        public static IEnumerable<TNode> SelfAndAncestors<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : IPathNode<TNode, TItem, TMetadata>
+        public static IEnumerable<TNode> SelfAndAncestors<TNode, TItem>(this TNode node)
+            where TNode : IPathNode<TNode, TItem>
         {
             var nodeVisitor = node;
 
@@ -26,8 +26,8 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<TNode> Ancestors<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : IPathNode<TNode, TItem, TMetadata>
+        public static IEnumerable<TNode> Ancestors<TNode, TItem>(this TNode node)
+            where TNode : IPathNode<TNode, TItem>
         {
             var nodeVisitor = node.Parent;
 
@@ -38,8 +38,8 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<TNode> SelfAndDescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : IPathNode<TNode, TItem, TMetadata>
+        public static IEnumerable<TNode> SelfAndDescendantsDepthFirst<TNode, TItem>(this TNode node)
+            where TNode : IPathNode<TNode, TItem>
         {
             var nodeStack = new Stack<TNode>();
 
@@ -54,8 +54,8 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<TNode> SelfAndDescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : IPathNode<TNode, TItem, TMetadata>
+        public static IEnumerable<TNode> SelfAndDescendantsBreadthFirst<TNode, TItem>(this TNode node)
+            where TNode : IPathNode<TNode, TItem>
         {
             var nodeQueue = new Queue<TNode>();
 
@@ -71,7 +71,7 @@ namespace Monaco.PathTree
         }
 
         public static IEnumerable<TNode> DescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : IPathNode<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem>
         {
             var nodeStack = new Stack<TNode>(node.ChildNodes);
 
@@ -85,7 +85,7 @@ namespace Monaco.PathTree
         }
 
         public static IEnumerable<TNode> DescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
-            where TNode : IPathNode<TNode, TItem, TMetadata>
+            where TNode : IPathNode<TNode, TItem>
         {
             var nodeQueue = new Queue<TNode>();
 

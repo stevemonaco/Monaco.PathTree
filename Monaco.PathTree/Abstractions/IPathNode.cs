@@ -2,19 +2,16 @@
 
 namespace Monaco.PathTree.Abstractions
 {
-    public interface IPathNode<TNode, TItem, TMetadata>
-        where TNode : IPathNode<TNode, TItem, TMetadata>
+    public interface IPathNode<TNode, TItem>
+        where TNode : IPathNode<TNode, TItem>
     {
         IEnumerable<TItem> ChildItems { get; }
         IEnumerable<TNode> ChildNodes { get; }
         TItem Item { get; set; }
-        TMetadata Metadata { get; set; }
+
         string Name { get; }
         TNode Parent { get; set; }
-        string PathKey { get; }
-        IEnumerable<string> Paths { get; }
 
-        TNode AddChild(string nodeName, TItem item, TMetadata metadata = default);
         void AttachChildNode(TNode node);
         bool ContainsChildNode(string name);
 
