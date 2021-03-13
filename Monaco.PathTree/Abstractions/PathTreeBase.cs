@@ -59,8 +59,13 @@ namespace Monaco.PathTree.Abstractions
         /// <param name="metadata">Metadata to associate with the new node</param>
         public virtual void AttachNodeToPath(string path, TNode node)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (path is null)
+                ThrowHelper.ThrowArgumentNull(nameof(path));
+            else if (ExcludeRootFromPath is false && string.IsNullOrWhiteSpace(path))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
+
+            if (node is null)
+                ThrowHelper.ThrowArgumentNull(nameof(node));
 
             var parent = ResolveNode(path);
 
@@ -79,7 +84,9 @@ namespace Monaco.PathTree.Abstractions
         /// <returns>True if successful, false if failed</returns>
         public virtual bool TryGetItem(string path, out TItem item)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (path is null)
+                ThrowHelper.ThrowArgumentNull(nameof(path));
+            else if (ExcludeRootFromPath is false && string.IsNullOrWhiteSpace(path))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
 
             var node = ResolveNode(path);
@@ -103,7 +110,9 @@ namespace Monaco.PathTree.Abstractions
         /// <returns>True if successful, false if failed</returns>
         public virtual bool TryGetItem<TDerivedItem>(string path, out TDerivedItem item) where TDerivedItem : TItem
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (path is null)
+                ThrowHelper.ThrowArgumentNull(nameof(path));
+            else if (ExcludeRootFromPath is false && string.IsNullOrWhiteSpace(path))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
 
             var node = ResolveNode(path);
@@ -123,15 +132,45 @@ namespace Monaco.PathTree.Abstractions
         /// </summary>
         /// <param name="path">The full path associated with the item</param>
         /// <param name="node"></param>
-        /// <returns></returns>
+        /// <returns>True if found, false if not found</returns>
         public virtual bool TryGetNode(string path, out TNode node)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (path is null)
+                ThrowHelper.ThrowArgumentNull(nameof(path));
+            else if (ExcludeRootFromPath is false && string.IsNullOrWhiteSpace(path))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
 
             node = ResolveNode(path);
 
             return node is object;
+        }
+
+        /// <summary>
+        /// Tries to get the node contained at the specified location
+        /// </summary>
+        /// <param name="path">The full path associated with the item</param>
+        /// <param name="node"></param>
+        /// <returns>True if found and of type TDerivedNode, false if not found or not of type TDerivedNode</returns>
+        public virtual bool TryGetNode<TDerivedNode>(string path, out TDerivedNode node)
+            where TDerivedNode : TNode
+        {
+            if (path is null)
+                ThrowHelper.ThrowArgumentNull(nameof(path));
+            else if (ExcludeRootFromPath is false && string.IsNullOrWhiteSpace(path))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
+
+            var baseNode = ResolveNode(path);
+
+            if (baseNode is TDerivedNode derivedNode)
+            {
+                node = derivedNode;
+                return true;
+            }
+            else
+            {
+                node = default;
+                return false;
+            }
         }
 
         /// <summary>
@@ -157,7 +196,7 @@ namespace Monaco.PathTree.Abstractions
         public IEnumerable<string> CreatePaths(TNode node)
         {
             int skip = ExcludeRootFromPath is true ? 1 : 0;
-            return node.SelfAndAncestors<TNode, TItem>().Skip(skip).Select(x => x.Name).Reverse();
+            return node.SelfAndAncestors<TNode, TItem>().Select(x => x.Name).Reverse().Skip(skip);
         }
 
         public string CreatePathKey(TNode node) => CreatePathKey(node, PathSeparators[0]);
@@ -193,14 +232,16 @@ namespace Monaco.PathTree.Abstractions
         protected virtual TNode Resolve(IList<string> nodeNames)
         {
             if (nodeNames.Count == 0)
-                return default;
+                return ExcludeRootFromPath is true ? Root : default;
 
-            if (nodeNames.First() != Root.Name)
+            int skip = ExcludeRootFromPath is false ? 1 : 0;
+
+            if (ExcludeRootFromPath == false && nodeNames.First() != Root.Name)
                 return default;
 
             var nodeVisitor = Root;
 
-            foreach (var name in nodeNames.Skip(1))
+            foreach (var name in nodeNames.Skip(skip))
             {
                 if (!nodeVisitor.TryGetChildNode(name, out TNode nextNode))
                 {
