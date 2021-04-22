@@ -15,43 +15,30 @@ namespace Monaco.PathTree.SampleApp
 
         public static void BuiltInNodeSample()
         {
-            var rootNode = new PathNode<Resource, Metadata>("Root",
-                new StringResource("Root Resource", "This is the Root Resource"),
-                new Metadata(DateTime.Now, Guid.NewGuid()));
+            var rootNode = new PathNode<Resource>("Root",
+                new StringResource("Root Resource", "This is the Root Resource"));
 
-            var tree = new PathTree<PathNode<Resource, Metadata>, Resource, Metadata>(rootNode);
+            var tree = new PathTree<PathNode<Resource>, Resource>(rootNode);
 
             // Add nodes using absolute paths
-            tree.AddItemAsPath("/Root/Node1",
-                new StringResource("Resource 1a", "This is the first child node"),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(1), Guid.NewGuid())
-            );
+            tree.AttachNodeAsPath("/Root/Node1",
+                new PathNode<Resource>("Node1", new StringResource("Resource 1a", "This is the first child node")));
 
-            var node2 = tree.AddItemAsPath("/Root/Node2",
-                new StringResource("Resource 1b", "This is the second child node"),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(2), Guid.NewGuid())
-            );
+            var node2 = new PathNode<Resource>("Node2", new StringResource("Resouce 1b", "This is the second child node"));
+            tree.AttachNodeAsPath("/Root/Node2", node2);
 
-            tree.AddItemAsPath("/Root/Node1/SlateBlueNode",
-                new Rgba32Resource("Slate Blue", 113, 113, 198, 0),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(3), Guid.NewGuid())
-            );
+            tree.AttachNodeToPath("/Root/Node1/",
+                new PathNode<Resource>("SlateBlueNode", new Rgba32Resource("Slate Blue", 113, 113, 198, 0)));
 
-            tree.AddItemAsPath("/Root/Node1/DarkKhakiNode",
-                new Rgba32Resource("Dark Khaki", 189, 183, 107, 0),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(4), Guid.NewGuid())
-            );
+            tree.AttachNodeAsPath("/Root/Node1/DarkKhakiNode",
+                 new PathNode<Resource>("DarkKhakiNode", new Rgba32Resource("Dark Khaki", 189, 183, 107, 0)));
 
             // Add child nodes directly to a node
-            node2.AddChild("BlueNode",
-                new Rgba32Resource("Blue", 0, 0, 255, 0),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(5), Guid.NewGuid())
-            );
+            node2.AttachChildNode(new PathNode<Resource>("BlueNode",
+                new Rgba32Resource("Blue", 0, 0, 255, 0)));
 
-            node2.AddChild("WhiteNode",
-                new Rgba32Resource("White", 255, 255, 255, 0),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(6), Guid.NewGuid())
-            );
+            node2.AttachChildNode(new PathNode<Resource>("WhiteNode",
+                new Rgba32Resource("White", 255, 255, 255, 0)));
 
             // Print out all nodes
             foreach (var node in tree.EnumerateBreadthFirst())
@@ -63,9 +50,8 @@ namespace Monaco.PathTree.SampleApp
                     Resource resource => $"'{resource.Name}'"
                 };
 
-                Console.WriteLine($"{node.PathKey} : '{node.Name}'");
+                Console.WriteLine($"{tree.CreatePathKey(node)} : '{node.Name}'");
                 Console.WriteLine($"\tItem: {itemOutput}");
-                Console.WriteLine($"\tMetadata: {node.Metadata.CreationTime}, {node.Metadata.Guid}");
             }
         }
 
@@ -73,60 +59,51 @@ namespace Monaco.PathTree.SampleApp
         {
             var rootNode = new ResourceNode("Root",
                 new StringResource("Root Resource", "This is the Root Resource"),
-                new Metadata(DateTime.Now, Guid.NewGuid()));
+                DateTime.Now);
 
             var tree = new ResourceTree(rootNode);
 
             // Using the built-in PathTree<...> with custom nodes is also an option
-            // var tree = new PathTree<ResourceNode, Resource, Metadata>(rootNode);
+            // var tree = new PathTree<ResourceNode, Resource>(rootNode);
 
             // Add nodes by creating nodes and attaching them
-            // These will be typed as StringNode
             var node1 = new StringNode("Node1",
                 new StringResource("Resource 1a", "This is the first child node"),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(1), Guid.NewGuid())
-            );
+                DateTime.Now + TimeSpan.FromMinutes(1));
             node1.NodeCountBeforeAddition = tree.Count();
             rootNode.AttachChildNode(node1);
 
             var node2 = new StringNode("Node2",
-                new StringResource("Resource 1a", "This is the first child node"),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(1), Guid.NewGuid())
-            );
+                new StringResource("Resource 1b", "This is the second child node"),
+                DateTime.Now + TimeSpan.FromMinutes(2));
             node2.NodeCountBeforeAddition = tree.Count();
             rootNode.AttachChildNode(node2);
 
-            // Add items directly as a path
-            // These will be ResourceNodes by default
-            tree.AddItemAsPath("/Root/Node1/SlateBlueNode",
-                new Rgba32Resource("Slate Blue", 113, 113, 198, 0),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(3), Guid.NewGuid())
-            );
+            tree.AttachNodeToPath("/Root/Node1",
+                new ResourceNode("SlateBlueNode", 
+                    new Rgba32Resource("Slate Blue", 113, 113, 198, 0), 
+                    DateTime.Now + TimeSpan.FromMinutes(3)));
 
-            tree.AddItemAsPath("/Root/Node1/DarkKhakiNode",
-                new Rgba32Resource("Dark Khaki", 189, 183, 107, 0),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(4), Guid.NewGuid())
-            );
+            tree.AttachNodeToPath("/Root/Node1",
+                new ResourceNode("DarkKhakiNode",
+                    new Rgba32Resource("Dark Khaki", 189, 183, 107, 0),
+                    DateTime.Now + TimeSpan.FromMinutes(4)));
 
-            // Add child nodes directly to a node
-            // These will be ResourceNodes by default
-            node2.AddChild("BlueNode",
+            node2.AttachChildNode(new ResourceNode("BlueNode",
                 new Rgba32Resource("Blue", 0, 0, 255, 0),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(5), Guid.NewGuid())
-            );
+                DateTime.Now + TimeSpan.FromMinutes(5)));
 
-            node2.AddChild("WhiteNode",
+            node2.AttachChildNode(new ResourceNode("WhiteNode",
                 new Rgba32Resource("White", 255, 255, 255, 0),
-                new Metadata(DateTime.Now + TimeSpan.FromMinutes(6), Guid.NewGuid())
-            );
+                DateTime.Now + TimeSpan.FromMinutes(6)));
 
             // Print out all nodes
             foreach (var node in tree.EnumerateBreadthFirst())
             {
                 var nodeOutput = node switch
                 {
-                    StringNode stringNode => $"{node.PathKey} : '{node.Name}' '{node.GetType().Name}' '{stringNode.NodeCountBeforeAddition}'",
-                    ResourceNode resourceNode => $"{node.PathKey} : '{node.Name}' '{node.GetType().Name}'"
+                    StringNode stringNode => $"{tree.CreatePathKey(node)} : '{node.Name}' '{node.GetType().Name}' '{stringNode.NodeCountBeforeAddition}'",
+                    ResourceNode resourceNode => $"{tree.CreatePathKey(node)} : '{node.Name}' '{node.GetType().Name}'"
                 };
 
                 var itemOutput = node.Item switch
@@ -136,9 +113,15 @@ namespace Monaco.PathTree.SampleApp
                     Resource resource => $"'{resource.Name}'"
                 };
 
+                var metadataOutput = node switch
+                {
+                    StringNode stringNode => $"{node.CreationTime}, {node.Guid}, '{stringNode.NodeCountBeforeAddition}'",
+                    ResourceNode resourceNode => $"{node.CreationTime}, {node.Guid}"
+                };
+
                 Console.WriteLine(nodeOutput);
                 Console.WriteLine($"\tItem: {itemOutput}");
-                Console.WriteLine($"\tMetadata: {node.Metadata.CreationTime}, {node.Metadata.Guid}");
+                Console.WriteLine($"\tMetadata: {metadataOutput}");
             }
         }
     }

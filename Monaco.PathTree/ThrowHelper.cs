@@ -37,9 +37,9 @@ namespace Monaco.PathTree
 
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ThrowNodeIsAlreadyAttached(string nodeName, string nodePath, [CallerMemberName] string callerName = "")
+        public static void ThrowNodeIsAlreadyAttached(string nodeName, string parentName, [CallerMemberName] string callerName = "")
         {
-            throw new InvalidOperationException($"'{callerName}': Node '{nodeName}' is already attached to the tree at '{nodePath}'");
+            throw new InvalidOperationException($"'{callerName}': Node '{nodeName}' is already attached to the tree under parent '{parentName}'");
         }
 
         [DoesNotReturn]

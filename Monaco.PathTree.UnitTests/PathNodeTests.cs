@@ -7,7 +7,7 @@ namespace Monaco.PathTree.UnitTests
     [TestFixture]
     class PathNodeTests
     {
-        private PathNode<int, EmptyMetadata> parent;
+        private PathNode<int> parent;
         private readonly (string, int)[] _nodeChildren = new (string, int)[]
         {
             ("SubItem1", 1), ("SubItem2", 2), ("SubItem3", 3)
@@ -16,31 +16,19 @@ namespace Monaco.PathTree.UnitTests
         [SetUp]
         public void Setup()
         {
-            parent = new PathNode<int, EmptyMetadata>("parent", -1);
+            parent = new PathNode<int>("parent", -1);
             foreach (var item in _nodeChildren)
-                parent.AddChild(item.Item1, item.Item2);
-        }
-
-        [TestCase("TestItem1", 15)]
-        public void AddChild_AsExpected(string name, int item)
-        {
-            parent.AddChild(name, item);
-
-            parent.TryGetChildNode(name, out var node);
-
-            Assert.Multiple(() =>
             {
-                Assert.NotNull(node);
-                Assert.AreEqual(name, node.Name);
-                Assert.AreEqual(item, node.Item);
-            });
+                var child = new PathNode<int>(item.Item1, item.Item2);
+                parent.AttachChildNode(child);
+            }
         }
 
         [Test]
         public void AttachChildNode_AsExpected()
         {
             var expected = ("TestItem5", 5);
-            parent.AttachChildNode(new PathNode<int, EmptyMetadata>(expected.Item1, expected.Item2));
+            parent.AttachChildNode(new PathNode<int>(expected.Item1, expected.Item2));
 
             parent.TryGetChildNode(expected.Item1, out var node);
 

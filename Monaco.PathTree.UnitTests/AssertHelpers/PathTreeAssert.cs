@@ -6,7 +6,7 @@ namespace Monaco.PathTree.UnitTests.AssertHelpers
 {
     static class PathTreeAssert
     {
-        public static void EqualsAll<T>(PathTree<PathNode<T, EmptyMetadata>, T, EmptyMetadata> tree, IList<(string, T)> list) where T : IComparable<T>
+        public static void EqualsAll<T>(PathTree<PathNode<T>, T> tree, IList<(string, T)> list) where T : IComparable<T>
         {
             var treeCount = tree.Count();
 

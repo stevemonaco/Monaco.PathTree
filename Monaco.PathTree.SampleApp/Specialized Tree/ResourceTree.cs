@@ -2,7 +2,7 @@
 
 namespace Monaco.PathTree.SampleApp
 {
-    public class ResourceTree : PathTreeBase<ResourceNode, Resource, Metadata>
+    public class ResourceTree : PathTreeBase<ResourceNode, Resource>
     {
         public ResourceTree(ResourceNode root) :
             base(root)

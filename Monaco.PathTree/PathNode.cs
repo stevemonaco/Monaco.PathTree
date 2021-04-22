@@ -2,16 +2,11 @@
 
 namespace Monaco.PathTree
 {
-    public sealed class PathNode<TItem, TMetadata> : PathNodeBase<PathNode<TItem, TMetadata>, TItem, TMetadata>
+    public sealed class PathNode<TItem> : PathNodeBase<PathNode<TItem>, TItem>
     {
-        public PathNode(string rootNodeName, TItem item, TMetadata metadata = default) :
-            base(rootNodeName, item, metadata)
+        public PathNode(string rootNodeName, TItem item) :
+            base(rootNodeName, item)
         {
-        }
-
-        protected override PathNode<TItem, TMetadata> CreateNode(string nodeName, TItem item, TMetadata metadata = default)
-        {
-            return new PathNode<TItem, TMetadata>(nodeName, item, metadata);
         }
     }
 }

@@ -5,56 +5,6 @@ namespace Monaco.PathTree.UnitTests
 {
     public class PathTreeTestCases
     {
-        public static IEnumerable<TestCaseData> AddItemAsPathCases()
-        {
-            var rootItemList = new List<(string, int)> { ("/Root", -1) };
-            yield return new TestCaseData(rootItemList);
-
-            var singleItemList = new List<(string, int)> { ("/Root", -1), ("/Root/Folder1", 1) };
-            yield return new TestCaseData(singleItemList);
-
-            var nestedList = new List<(string, int)> {
-                ("/Root", -1),
-                ("/Root/Folder1", 1),
-                ("/Root/Folder1/Item1", 15),
-                ("/Root/Folder1/Item2", 25),
-                ("/Root/Folder2", 2),
-                ("/Root/Folder2/Folder3", 3),
-                ("/Root/Folder2/Folder3/Item3", 5)
-            };
-            yield return new TestCaseData(nestedList);
-        }
-
-        public static IEnumerable<TestCaseData> AddItemAsPathDuplicateCases()
-        {
-            var items = new List<(string, int)> { ("/Root", -1), ("/Root/Folder1", 1), ("/Root/Folder1/Item1", 15) };
-            var rootDuplicate = ("/Root/Folder1", 1);
-
-            yield return new TestCaseData(items, rootDuplicate);
-
-            var childDuplicate = ("/Root/Folder1/Item1", 15);
-
-            yield return new TestCaseData(items, childDuplicate);
-        }
-
-        public static IEnumerable<TestCaseData> AddItemToPathCases()
-        {
-            var tree = TestTreeBuilder.BuildMultiLayerTree();
-            yield return new TestCaseData(tree, "/Root/Folder1/Item1", "/Root/Folder1/Item1/TestNode", "TestNode", 8);
-
-            tree = TestTreeBuilder.BuildMultiLayerTree();
-            yield return new TestCaseData(tree, "/Root", "/Root/TestNode", "TestNode", 8);
-        }
-
-        public static IEnumerable<TestCaseData> AddItemToPathDuplicateCases()
-        {
-            var tree = TestTreeBuilder.BuildMultiLayerTree();
-            yield return new TestCaseData(tree, "/Root/Folder1", "Item1");
-
-            tree = TestTreeBuilder.BuildMultiLayerTree();
-            yield return new TestCaseData(tree, "/Root", "Folder1");
-        }
-
         public static IEnumerable<TestCaseData> EnumerateDepthFirstCases()
         {
             var rootOnlyList = new List<(string, int)> { };

@@ -4,62 +4,25 @@ using System.Linq;
 
 namespace Monaco.PathTree.Abstractions
 {
-    public abstract class PathNodeBase<TNode, TItem, TMetadata> : IPathNode<TNode, TItem, TMetadata>
-        where TNode : PathNodeBase<TNode, TItem, TMetadata>
+    public abstract class PathNodeBase<TNode, TItem> : IPathNode<TNode, TItem>
+        where TNode : PathNodeBase<TNode, TItem>
     {
         protected IDictionary<string, TNode> _children;
 
         public TNode Parent { get; set; }
         public TItem Item { get; set; }
-        public TMetadata Metadata { get; set; }
         public string Name { get; private set; }
 
         public IEnumerable<TNode> ChildNodes => _children?.Values ?? Enumerable.Empty<TNode>();
         public IEnumerable<TItem> ChildItems => _children?.Values.Select(x => x.Item) ?? Enumerable.Empty<TItem>();
 
-        public PathNodeBase(string rootNodeName, TItem item, TMetadata metadata = default)
+        public PathNodeBase(string rootNodeName, TItem item)
         {
             if (string.IsNullOrWhiteSpace(rootNodeName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(rootNodeName));
 
             Name = rootNodeName;
             Item = item;
-            Metadata = metadata;
-        }
-
-        /// <summary>
-        /// Returns the path key
-        /// </summary>
-        /// <returns></returns>
-        public string PathKey => "/" + string.Join("/", ((TNode)this).SelfAndAncestors<TNode, TItem, TMetadata>().Select(x => x.Name).Reverse());
-
-        public IEnumerable<string> Paths => ((TNode)this).SelfAndAncestors<TNode, TItem, TMetadata>().Select(x => x.Name).Reverse();
-
-        protected abstract TNode CreateNode(string nodeName, TItem item, TMetadata metadata = default);
-
-        /// <summary>
-        /// Adds a child node created from parameters
-        /// </summary>
-        /// <param name="nodeName">Name of the node to add</param>
-        /// <param name="item">Item associated with node</param>
-        /// <param name="metadata">Metadata associated with node</param>
-        /// <returns>The node which was added</returns>
-        public TNode AddChild(string nodeName, TItem item, TMetadata metadata = default)
-        {
-            if (string.IsNullOrWhiteSpace(nodeName))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
-
-            if (_children is null)
-                _children = new Dictionary<string, TNode>();
-
-            if (_children.ContainsKey(nodeName))
-                ThrowHelper.ThrowNodeAlreadyExists(nodeName);
-
-            var node = CreateNode(nodeName, item, metadata);
-            node.Parent = (TNode) this;
-            _children.Add(nodeName, node);
-
-            return node;
         }
 
         /// <summary>
@@ -78,7 +41,7 @@ namespace Monaco.PathTree.Abstractions
                 ThrowHelper.ThrowNodeAlreadyExists(node.Name);
 
             if (node.Parent is object)
-                ThrowHelper.ThrowNodeIsAlreadyAttached(node.Name, node.PathKey);
+                ThrowHelper.ThrowNodeIsAlreadyAttached(node.Name, node.Parent.Name);
 
             node.Parent = (TNode) this;
             _children.Add(node.Name, node);
