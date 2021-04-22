@@ -25,7 +25,10 @@ namespace Monaco.PathTree.Abstractions
 
         public PathTreeBase(TNode root)
         {
-            Root = root;
+            if (root is null)
+                ThrowHelper.ThrowArgumentNull(nameof(root));
+
+            _root = root;
         }
 
         /// <summary>
@@ -44,6 +47,9 @@ namespace Monaco.PathTree.Abstractions
 
             if (parent is null)
                 ThrowHelper.ThrowNodeNotFound(path);
+
+            if (parent.ContainsChildNode(nodeName))
+                ThrowHelper.ThrowNodeAlreadyExists(nodeName);
 
             node.Detach();
             node.Rename(nodeName);
@@ -82,7 +88,7 @@ namespace Monaco.PathTree.Abstractions
         /// <param name="path">The full path associated with the item</param>
         /// <param name="item"></param>
         /// <returns>True if successful, false if failed</returns>
-        public virtual bool TryGetItem(string path, out TItem item)
+        public virtual bool TryGetItem(string path, out TItem? item)
         {
             if (path is null)
                 ThrowHelper.ThrowArgumentNull(nameof(path));
@@ -96,9 +102,11 @@ namespace Monaco.PathTree.Abstractions
                 item = node.Item;
                 return true;
             }
-
-            item = default;
-            return false;
+            else
+            {
+                item = default;
+                return false;
+            }
         }
 
         /// <summary>
@@ -108,7 +116,7 @@ namespace Monaco.PathTree.Abstractions
         /// <param name="path">The full path associated with the item</param>
         /// <param name="item"></param>
         /// <returns>True if successful, false if failed</returns>
-        public virtual bool TryGetItem<TDerivedItem>(string path, out TDerivedItem item) where TDerivedItem : TItem
+        public virtual bool TryGetItem<TDerivedItem>(string path, out TDerivedItem? item) where TDerivedItem : TItem
         {
             if (path is null)
                 ThrowHelper.ThrowArgumentNull(nameof(path));
@@ -119,12 +127,14 @@ namespace Monaco.PathTree.Abstractions
 
             if (node is object)
             {
-                item = (TDerivedItem)node.Item;
+                item = (TDerivedItem) node.Item!;
                 return true;
             }
-
-            item = default;
-            return false;
+            else
+            {
+                item = default;
+                return false;
+            }
         }
 
         /// <summary>
@@ -133,7 +143,7 @@ namespace Monaco.PathTree.Abstractions
         /// <param name="path">The full path associated with the item</param>
         /// <param name="node"></param>
         /// <returns>True if found, false if not found</returns>
-        public virtual bool TryGetNode(string path, out TNode node)
+        public virtual bool TryGetNode(string path, out TNode? node)
         {
             if (path is null)
                 ThrowHelper.ThrowArgumentNull(nameof(path));
@@ -151,7 +161,7 @@ namespace Monaco.PathTree.Abstractions
         /// <param name="path">The full path associated with the item</param>
         /// <param name="node"></param>
         /// <returns>True if found and of type TDerivedNode, false if not found or not of type TDerivedNode</returns>
-        public virtual bool TryGetNode<TDerivedNode>(string path, out TDerivedNode node)
+        public virtual bool TryGetNode<TDerivedNode>(string path, out TDerivedNode? node)
             where TDerivedNode : TNode
         {
             if (path is null)
@@ -215,13 +225,13 @@ namespace Monaco.PathTree.Abstractions
         protected virtual IList<string> SplitPath(string absolutePath) =>
             absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
 
-        protected virtual TNode ResolveNode(string absolutePath)
+        protected virtual TNode? ResolveNode(string absolutePath)
         {
             var nodeNames = SplitPath(absolutePath);
             return Resolve(nodeNames);
         }
 
-        protected virtual TNode ResolveParent(string absolutePath)
+        protected virtual TNode? ResolveParent(string absolutePath)
         {
             var nodeNames = SplitPath(absolutePath);
             var parentNodeNames = nodeNames.Take(nodeNames.Count - 1).ToList();
@@ -229,7 +239,7 @@ namespace Monaco.PathTree.Abstractions
             return Resolve(parentNodeNames);
         }
 
-        protected virtual TNode Resolve(IList<string> nodeNames)
+        protected virtual TNode? Resolve(IList<string> nodeNames)
         {
             if (nodeNames.Count == 0)
                 return ExcludeRootFromPath is true ? Root : default;
@@ -243,11 +253,11 @@ namespace Monaco.PathTree.Abstractions
 
             foreach (var name in nodeNames.Skip(skip))
             {
-                if (!nodeVisitor.TryGetChildNode(name, out TNode nextNode))
+                if (!nodeVisitor.TryGetChildNode(name, out TNode? nextNode))
                 {
                     return default;
                 }
-                nodeVisitor = nextNode;
+                nodeVisitor = nextNode!;
             }
 
             return nodeVisitor;

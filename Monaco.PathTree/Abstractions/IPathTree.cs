@@ -12,9 +12,9 @@ namespace Monaco.PathTree
         void AttachNodeAsPath(string path, TNode node);
         void AttachNodeToPath(string path, TNode node);
 
-        bool TryGetItem(string path, out TItem item);
-        bool TryGetItem<U>(string path, out U item) where U : TItem;
-        bool TryGetNode(string path, out TNode node);
+        bool TryGetItem(string path, out TItem? item);
+        bool TryGetItem<U>(string path, out U? item) where U : TItem;
+        bool TryGetNode(string path, out TNode? node);
 
         void RemoveNode(string path);
 

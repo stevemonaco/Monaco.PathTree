@@ -1,7 +1,5 @@
-﻿using Monaco.PathTree.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using Monaco.PathTree.Abstractions;
 
 namespace Monaco.PathTree
 {
@@ -17,7 +15,7 @@ namespace Monaco.PathTree
         public static IEnumerable<TNode> SelfAndAncestors<TNode, TItem>(this TNode node)
             where TNode : IPathNode<TNode, TItem>
         {
-            var nodeVisitor = node;
+            TNode? nodeVisitor = node;
 
             while (nodeVisitor != null)
             {

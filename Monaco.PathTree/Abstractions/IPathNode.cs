@@ -10,17 +10,17 @@ namespace Monaco.PathTree.Abstractions
         TItem Item { get; set; }
 
         string Name { get; }
-        TNode Parent { get; set; }
+        TNode? Parent { get; set; }
 
         void AttachChildNode(TNode node);
-        bool ContainsChildNode(string name);
+        bool ContainsChildNode(string childName);
 
         void Detach();
-        TNode DetachChildNode(string nodeName);
+        TNode DetachChildNode(string childName);
 
-        void RemoveChildNode(string nodeName);
+        void RemoveChildNode(string childName);
         void Rename(string name);
-        void RenameChild(string name, string newName);
-        bool TryGetChildNode(string name, out TNode node);
+        void RenameChild(string childName, string newName);
+        bool TryGetChildNode(string childName, out TNode? node);
     }
 }
