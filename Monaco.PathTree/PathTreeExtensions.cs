@@ -3,8 +3,18 @@ using System.Collections.Generic;
 
 namespace Monaco.PathTree
 {
+    /// <summary>
+    /// Extension methods that allow iteration over an IPathTree
+    /// </summary>
     public static class PathTreeExtensions
     {
+        /// <summary>
+        /// Enumerates the tree in a depth-first traversal
+        /// </summary>
+        /// <typeparam name="TNode"></typeparam>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="tree">Tree to traverse</param>
+        /// <returns>Sequence of nodes</returns>
         public static IEnumerable<TNode> EnumerateDepthFirst<TNode, TItem>
             (this IPathTree<TNode, TItem> tree)
             where TNode : IPathNode<TNode, TItem>
@@ -12,6 +22,13 @@ namespace Monaco.PathTree
             return tree.Root.SelfAndDescendantsDepthFirst<TNode, TItem>();
         }
 
+        /// <summary>
+        /// Enumerates the tree in a breadth-first traversal
+        /// </summary>
+        /// <typeparam name="TNode"></typeparam>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="tree">Tree to traverse</param>
+        /// <returns>Sequence of nodes</returns>
         public static IEnumerable<TNode> EnumerateBreadthFirst<TNode, TItem>
             (this IPathTree<TNode, TItem> tree)
             where TNode : IPathNode<TNode, TItem>

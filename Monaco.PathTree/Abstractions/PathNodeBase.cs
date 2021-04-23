@@ -1,34 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Monaco.PathTree.Abstractions
 {
+    /// <summary>
+    /// Base node class for implementing Path Tree nodes
+    /// </summary>
+    /// <typeparam name="TNode">Self-referential node</typeparam>
+    /// <typeparam name="TItem">Type of Item stored within the node</typeparam>
     public abstract class PathNodeBase<TNode, TItem> : IPathNode<TNode, TItem>
         where TNode : PathNodeBase<TNode, TItem>
     {
-        protected IDictionary<string, TNode> _children;
+        protected IDictionary<string, TNode>? _children;
 
-        public TNode Parent { get; set; }
+        public TNode? Parent { get; set; }
         public TItem Item { get; set; }
         public string Name { get; private set; }
 
         public IEnumerable<TNode> ChildNodes => _children?.Values ?? Enumerable.Empty<TNode>();
         public IEnumerable<TItem> ChildItems => _children?.Values.Select(x => x.Item) ?? Enumerable.Empty<TItem>();
 
-        public PathNodeBase(string rootNodeName, TItem item)
+        public PathNodeBase(string name, TItem item)
         {
-            if (string.IsNullOrWhiteSpace(rootNodeName))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(rootNodeName));
+            if (string.IsNullOrWhiteSpace(name))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
 
-            Name = rootNodeName;
+            Name = name;
             Item = item;
         }
 
-        /// <summary>
-        /// Attaches an existing node as a child
-        /// </summary>
-        /// <param name="node">Node to attach</param>
+        /// <inheritdoc/>
         public void AttachChildNode(TNode node)
         {
             if (node is null)
@@ -47,87 +48,80 @@ namespace Monaco.PathTree.Abstractions
             _children.Add(node.Name, node);
         }
 
-        /// <summary>
-        /// Detaches a child node by name
-        /// </summary>
-        /// <param name="nodeName">Name of the node to detach</param>
-        /// <returns></returns>
-        public TNode DetachChildNode(string nodeName)
+        /// <inheritdoc/>
+        public bool TryGetChildNode(string childName, out TNode? node)
         {
-            if (string.IsNullOrWhiteSpace(nodeName))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
+            if (string.IsNullOrWhiteSpace(childName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
+
+            node = default;
 
             if (_children is null)
-                ThrowHelper.ThrowNodeNotFound(nodeName);
+                return false;
 
-            if (_children.TryGetValue(nodeName, out var node))
-            {
-                node.Parent = default;
-                _children.Remove(nodeName);
-                return node;
-            }
-            else
-            {
-                ThrowHelper.ThrowNodeNotFound(nodeName);
-                return default;
-            }
+            if (_children.TryGetValue(childName, out node))
+                return true;
+
+            return false;
         }
 
-        /// <summary>
-        /// Removes a child node by name
-        /// </summary>
-        /// <param name="nodeName">Name of the node to remove</param>
-        public void RemoveChildNode(string nodeName)
+        /// <inheritdoc/>
+        public bool ContainsChildNode(string childName)
         {
-            if (string.IsNullOrWhiteSpace(nodeName))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(nodeName));
+            if (string.IsNullOrWhiteSpace(childName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
 
             if (_children is null)
-                ThrowHelper.ThrowNodeNotFound(nodeName);
+                return false;
 
-            if (_children.ContainsKey(nodeName))
-                _children.Remove(nodeName);
-            else
-                ThrowHelper.ThrowNodeNotFound(nodeName);
+            return _children.ContainsKey(childName);
         }
 
-        /// <summary>
-        /// Renames a child node
-        /// </summary>
-        /// <param name="name">Name of the existing child node</param>
-        /// <param name="newName">New name</param>
-        public void RenameChild(string name, string newName)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
-
-            if (string.IsNullOrWhiteSpace(newName))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(newName));
-
-            if (_children is null)
-                ThrowHelper.ThrowNodeNotFound(name);
-
-            if (_children.TryGetValue(name, out var node))
-            {
-                node.Rename(newName);
-            }
-            else
-                ThrowHelper.ThrowNodeNotFound(name);
-        }
-
-        /// <summary>
-        /// Detaches this node from its parent, if parented
-        /// </summary>
+        /// <inheritdoc/>
         public void Detach()
         {
             if (Parent is object)
                 Parent.DetachChildNode(Name);
         }
 
-        /// <summary>
-        /// Renames this node
-        /// </summary>
-        /// <param name="name">New name</param>
+        /// <inheritdoc/>
+        public TNode DetachChildNode(string childName)
+        {
+            if (string.IsNullOrWhiteSpace(childName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
+
+            if (_children is null)
+                ThrowHelper.ThrowNodeNotFound(childName);
+
+            if (_children.TryGetValue(childName, out var node))
+            {
+                node.Parent = default;
+                _children.Remove(childName);
+                return node;
+            }
+            else
+            {
+                ThrowHelper.ThrowNodeNotFound(childName);
+                return default;
+            }
+        }
+
+        /// <inheritdoc/>
+        public void RemoveChildNode(string childName)
+        {
+            if (string.IsNullOrWhiteSpace(childName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
+
+            if (_children is null)
+                ThrowHelper.ThrowNodeNotFound(childName);
+
+            if (_children.ContainsKey(childName))
+                _children.Remove(childName);
+            else
+                ThrowHelper.ThrowNodeNotFound(childName);
+        }
+
+        /// <inheritdoc/>
         public void Rename(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -147,42 +141,24 @@ namespace Monaco.PathTree.Abstractions
             }
         }
 
-        /// <summary>
-        /// Determines if this node contains a child with the specified name
-        /// </summary>
-        /// <param name="name">Name of child node</param>
-        /// <returns>True if contained, false if not contained</returns>
-        public bool ContainsChildNode(string name)
+        /// <inheritdoc/>
+        public void RenameChild(string childName, string newName)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
+            if (string.IsNullOrWhiteSpace(childName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
+
+            if (string.IsNullOrWhiteSpace(newName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(newName));
 
             if (_children is null)
-                return false;
+                ThrowHelper.ThrowNodeNotFound(childName);
 
-            return _children.ContainsKey(name);
-        }
-
-        /// <summary>
-        /// Tries to get a child node by name
-        /// </summary>
-        /// <param name="name">Name of child node to get</param>
-        /// <param name="node"></param>
-        /// <returns>True if found, false if not found</returns>
-        public bool TryGetChildNode(string name, out TNode node)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
-
-            node = default;
-
-            if (_children is null)
-                return false;
-
-            if (_children.TryGetValue(name, out node))
-                return true;
-
-            return false;
+            if (_children.TryGetValue(childName, out var node))
+            {
+                node.Rename(newName);
+            }
+            else
+                ThrowHelper.ThrowNodeNotFound(childName);
         }
     }
 }

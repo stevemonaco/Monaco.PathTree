@@ -5,10 +5,17 @@ using System.Text;
 
 namespace Monaco.PathTree.Abstractions
 {
+    /// <summary>
+    /// Base tree class for a tree whose nodes can be accessed by paths
+    /// </summary>
+    /// <typeparam name="TNode">Type of node</typeparam>
+    /// <typeparam name="TItem">Type of item stored within the node</typeparam>
     public abstract class PathTreeBase<TNode, TItem> : IPathTree<TNode, TItem>
         where TNode : IPathNode<TNode, TItem>
     {
         private TNode _root;
+
+        /// <inheritdoc/>
         public TNode Root
         {
             get => _root;
@@ -20,19 +27,21 @@ namespace Monaco.PathTree.Abstractions
             }
         }
 
+        /// <inheritdoc/>
         public bool ExcludeRootFromPath { get; set; }
+
+        /// <inheritdoc/>
         public string[] PathSeparators { get; set; } = new string[] { "/", "\\" };
 
         public PathTreeBase(TNode root)
         {
-            Root = root;
+            if (root is null)
+                ThrowHelper.ThrowArgumentNull(nameof(root));
+
+            _root = root;
         }
 
-        /// <summary>
-        /// Attaches the node as the specified path if the parent exists and renames the node if necessary
-        /// </summary>
-        /// <param name="path">The full path associated with the node</param>
-        /// <param name="node">The node to be attached</param>
+        /// <inheritdoc/>
         public virtual void AttachNodeAsPath(string path, TNode node)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -45,18 +54,15 @@ namespace Monaco.PathTree.Abstractions
             if (parent is null)
                 ThrowHelper.ThrowNodeNotFound(path);
 
+            if (parent.ContainsChildNode(nodeName))
+                ThrowHelper.ThrowNodeAlreadyExists(nodeName);
+
             node.Detach();
             node.Rename(nodeName);
             parent.AttachChildNode(node);
         }
 
-        /// <summary>
-        /// Attaches the node as a child of the specified path
-        /// </summary>
-        /// <param name="path">The full path associated with the parent</param>
-        /// <param name="nodeName">Name of the node to add</param>
-        /// <param name="item">The item to be added</param>
-        /// <param name="metadata">Metadata to associate with the new node</param>
+        /// <inheritdoc/>
         public virtual void AttachNodeToPath(string path, TNode node)
         {
             if (path is null)
@@ -72,17 +78,15 @@ namespace Monaco.PathTree.Abstractions
             if (parent is null)
                 ThrowHelper.ThrowNodeNotFound(path);
 
+            if (parent.ContainsChildNode(node.Name))
+                ThrowHelper.ThrowNodeAlreadyExists(node.Name);
+
             node.Detach();
             parent.AttachChildNode(node);
         }
 
-        /// <summary>
-        /// Tries to get an existing item stored at the specified path
-        /// </summary>
-        /// <param name="path">The full path associated with the item</param>
-        /// <param name="item"></param>
-        /// <returns>True if successful, false if failed</returns>
-        public virtual bool TryGetItem(string path, out TItem item)
+        /// <inheritdoc/>
+        public virtual bool TryGetItem(string path, out TItem? item)
         {
             if (path is null)
                 ThrowHelper.ThrowArgumentNull(nameof(path));
@@ -96,19 +100,15 @@ namespace Monaco.PathTree.Abstractions
                 item = node.Item;
                 return true;
             }
-
-            item = default;
-            return false;
+            else
+            {
+                item = default;
+                return false;
+            }
         }
 
-        /// <summary>
-        /// Tries to get an existing item of a specific type stored at the specified path
-        /// </summary>
-        /// <typeparam name="TDerivedItem">Type of the item</typeparam>
-        /// <param name="path">The full path associated with the item</param>
-        /// <param name="item"></param>
-        /// <returns>True if successful, false if failed</returns>
-        public virtual bool TryGetItem<TDerivedItem>(string path, out TDerivedItem item) where TDerivedItem : TItem
+        /// <inheritdoc/>
+        public virtual bool TryGetItem<TDerivedItem>(string path, out TDerivedItem? item) where TDerivedItem : TItem
         {
             if (path is null)
                 ThrowHelper.ThrowArgumentNull(nameof(path));
@@ -119,21 +119,18 @@ namespace Monaco.PathTree.Abstractions
 
             if (node is object)
             {
-                item = (TDerivedItem)node.Item;
+                item = (TDerivedItem) node.Item!;
                 return true;
             }
-
-            item = default;
-            return false;
+            else
+            {
+                item = default;
+                return false;
+            }
         }
 
-        /// <summary>
-        /// Tries to get the node contained at the specified location
-        /// </summary>
-        /// <param name="path">The full path associated with the item</param>
-        /// <param name="node"></param>
-        /// <returns>True if found, false if not found</returns>
-        public virtual bool TryGetNode(string path, out TNode node)
+        /// <inheritdoc/>
+        public virtual bool TryGetNode(string path, out TNode? node)
         {
             if (path is null)
                 ThrowHelper.ThrowArgumentNull(nameof(path));
@@ -145,38 +142,7 @@ namespace Monaco.PathTree.Abstractions
             return node is object;
         }
 
-        /// <summary>
-        /// Tries to get the node contained at the specified location
-        /// </summary>
-        /// <param name="path">The full path associated with the item</param>
-        /// <param name="node"></param>
-        /// <returns>True if found and of type TDerivedNode, false if not found or not of type TDerivedNode</returns>
-        public virtual bool TryGetNode<TDerivedNode>(string path, out TDerivedNode node)
-            where TDerivedNode : TNode
-        {
-            if (path is null)
-                ThrowHelper.ThrowArgumentNull(nameof(path));
-            else if (ExcludeRootFromPath is false && string.IsNullOrWhiteSpace(path))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(path));
-
-            var baseNode = ResolveNode(path);
-
-            if (baseNode is TDerivedNode derivedNode)
-            {
-                node = derivedNode;
-                return true;
-            }
-            else
-            {
-                node = default;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Removes the node at the specified location
-        /// </summary>
-        /// <param name="path">The full path associated with the item</param>
+        /// <inheritdoc/>
         public virtual void RemoveNode(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -192,16 +158,23 @@ namespace Monaco.PathTree.Abstractions
 
             removeNode.Parent.RemoveChildNode(removeNode.Name);
         }
-        
-        public IEnumerable<string> CreatePaths(TNode node)
+
+        /// <summary>
+        /// Creates a sequence of strings which represent each level of the tree 
+        /// </summary>
+        /// <param name="node">Node to create paths from</param>
+        /// <returns>The sequence of path levels</returns>
+        public virtual IEnumerable<string> CreatePaths(TNode node)
         {
             int skip = ExcludeRootFromPath is true ? 1 : 0;
             return node.SelfAndAncestors<TNode, TItem>().Select(x => x.Name).Reverse().Skip(skip);
         }
 
-        public string CreatePathKey(TNode node) => CreatePathKey(node, PathSeparators[0]);
+        /// <inheritdoc/>
+        public virtual string CreatePathKey(TNode node) => CreatePathKey(node, PathSeparators[0]);
 
-        public string CreatePathKey(TNode node, string separator)
+        /// <inheritdoc/>
+        public virtual string CreatePathKey(TNode node, string separator)
         {
             var sb = new StringBuilder();
             foreach (var path in CreatePaths(node))
@@ -215,13 +188,13 @@ namespace Monaco.PathTree.Abstractions
         protected virtual IList<string> SplitPath(string absolutePath) =>
             absolutePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
 
-        protected virtual TNode ResolveNode(string absolutePath)
+        protected virtual TNode? ResolveNode(string absolutePath)
         {
             var nodeNames = SplitPath(absolutePath);
             return Resolve(nodeNames);
         }
 
-        protected virtual TNode ResolveParent(string absolutePath)
+        protected virtual TNode? ResolveParent(string absolutePath)
         {
             var nodeNames = SplitPath(absolutePath);
             var parentNodeNames = nodeNames.Take(nodeNames.Count - 1).ToList();
@@ -229,7 +202,7 @@ namespace Monaco.PathTree.Abstractions
             return Resolve(parentNodeNames);
         }
 
-        protected virtual TNode Resolve(IList<string> nodeNames)
+        protected virtual TNode? Resolve(IList<string> nodeNames)
         {
             if (nodeNames.Count == 0)
                 return ExcludeRootFromPath is true ? Root : default;
@@ -243,11 +216,11 @@ namespace Monaco.PathTree.Abstractions
 
             foreach (var name in nodeNames.Skip(skip))
             {
-                if (!nodeVisitor.TryGetChildNode(name, out TNode nextNode))
+                if (!nodeVisitor.TryGetChildNode(name, out TNode? nextNode))
                 {
                     return default;
                 }
-                nodeVisitor = nextNode;
+                nodeVisitor = nextNode!;
             }
 
             return nodeVisitor;
