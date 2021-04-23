@@ -9,12 +9,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monaco.PathTree.UnitTests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monaco.PathTree.SampleApp", "Monaco.PathTree.SampleApp\Monaco.PathTree.SampleApp.csproj", "{BCCED5A0-4BFD-4A8B-899A-2EA412CCC6E5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{927B05D3-7DB0-45CB-BFB2-20D0F46E2259}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{927B05D3-7DB0-45CB-BFB2-20D0F46E2259}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{927B05D3-7DB0-45CB-BFB2-20D0F46E2259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E759F1C-0F13-4D9E-B63F-501C9B2CF386}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E759F1C-0F13-4D9E-B63F-501C9B2CF386}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E759F1C-0F13-4D9E-B63F-501C9B2CF386}.Release|Any CPU.ActiveCfg = Release|Any CPU
