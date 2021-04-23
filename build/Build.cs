@@ -79,6 +79,7 @@ class Build : NukeBuild
 
     Target Package => _ => _
         .DependsOn(Test)
+        .Produces(OutputDirectory / "*.nupkg")
         .Executes(() =>
         {
             DotNetPack(_ => _
@@ -91,6 +92,7 @@ class Build : NukeBuild
 
     Target Publish => _ => _
         .DependsOn(Package)
+        .Produces(OutputDirectory / "*.dll")
         .Executes(() =>
         {
             DotNetPublish(_ => _
