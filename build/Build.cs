@@ -21,7 +21,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
     GitHubActionsImage.WindowsLatest,
     PublishArtifacts = true,
     On = new[] { GitHubActionsTrigger.Push },
-    InvokedTargets = new[] { nameof(Test) }
+    InvokedTargets = new[] { nameof(Publish) }
 )]
 class Build : NukeBuild
 {
