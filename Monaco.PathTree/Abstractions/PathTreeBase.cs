@@ -78,6 +78,9 @@ namespace Monaco.PathTree.Abstractions
             if (parent is null)
                 ThrowHelper.ThrowNodeNotFound(path);
 
+            if (parent.ContainsChildNode(node.Name))
+                ThrowHelper.ThrowNodeAlreadyExists(node.Name);
+
             node.Detach();
             parent.AttachChildNode(node);
         }

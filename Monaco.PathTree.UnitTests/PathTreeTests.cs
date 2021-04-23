@@ -45,7 +45,7 @@ namespace Monaco.PathTree.UnitTests
             var node = new PathNode<int>("Item1", 15);
 
             Assert.Throws<ArgumentException>(() => 
-                tree.AttachNodeAsPath(addPath, node)
+                tree.AttachNodeToPath(addPath, node)
             );
         }
 
