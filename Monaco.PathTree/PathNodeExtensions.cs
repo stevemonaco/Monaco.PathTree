@@ -4,14 +4,22 @@ using Monaco.PathTree.Abstractions;
 namespace Monaco.PathTree
 {
     /// <summary>
-    /// Extension methods that allow iteration over PathNode
+    /// Extension methods that allow iteration over IPathNode
     /// </summary>
-    /// <returns></returns>
-    /// <remarks>Idea adapted from https://www.benjamin.pizza/posts/2017-11-13-recursion-without-recursion.html 
-    /// Implementation adapted from https://blogs.msdn.microsoft.com/wesdyer/2007/03/23/all-about-iterators/
+    /// <remarks>
+    /// Some ideas and implementation adapted from:
+    /// https://www.benjamin.pizza/posts/2017-11-13-recursion-without-recursion.html 
+    /// https://blogs.msdn.microsoft.com/wesdyer/2007/03/23/all-about-iterators/
     /// </remarks>
     public static class PathNodeExtensions
     {
+        /// <summary>
+        /// Enumerates the sequence of nodes starting from itself up to the root node
+        /// </summary>
+        /// <typeparam name="TNode"></typeparam>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="node">Node to enumerate</param>
+        /// <returns>Sequence of nodes</returns>
         public static IEnumerable<TNode> SelfAndAncestors<TNode, TItem>(this TNode node)
             where TNode : IPathNode<TNode, TItem>
         {
@@ -24,6 +32,13 @@ namespace Monaco.PathTree
             }
         }
 
+        /// <summary>
+        /// Enumerates the sequence of nodes from its parent node up to the root node
+        /// </summary>
+        /// <typeparam name="TNode"></typeparam>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="node">Node to enumerate</param>
+        /// <returns>Sequence of nodes</returns>
         public static IEnumerable<TNode> Ancestors<TNode, TItem>(this TNode node)
             where TNode : IPathNode<TNode, TItem>
         {
@@ -36,6 +51,13 @@ namespace Monaco.PathTree
             }
         }
 
+        /// <summary>
+        /// Enumerates all child nodes and the specified node in a depth-first traversal
+        /// </summary>
+        /// <typeparam name="TNode"></typeparam>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="node">Node to enumerate</param>
+        /// <returns>Sequence of nodes</returns>
         public static IEnumerable<TNode> SelfAndDescendantsDepthFirst<TNode, TItem>(this TNode node)
             where TNode : IPathNode<TNode, TItem>
         {
@@ -52,6 +74,13 @@ namespace Monaco.PathTree
             }
         }
 
+        /// <summary>
+        /// Enumerates all child nodes and the specified node in a breadth-first traversal
+        /// </summary>
+        /// <typeparam name="TNode"></typeparam>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="node">Node to enumerate</param>
+        /// <returns>Sequence of nodes</returns>
         public static IEnumerable<TNode> SelfAndDescendantsBreadthFirst<TNode, TItem>(this TNode node)
             where TNode : IPathNode<TNode, TItem>
         {
@@ -68,7 +97,15 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<TNode> DescendantsDepthFirst<TNode, TItem, TMetadata>(this TNode node)
+        /// <summary>
+        /// Enumerates all child nodes in a depth-first traversal
+        /// </summary>
+        /// <typeparam name="TNode"></typeparam>
+        /// <typeparam name="TItem"></typeparam>
+        /// <typeparam name="TMetadata"></typeparam>
+        /// <param name="node">Node to enumerate</param>
+        /// <returns>Sequence of nodes</returns>
+        public static IEnumerable<TNode> DescendantsDepthFirst<TNode, TItem>(this TNode node)
             where TNode : IPathNode<TNode, TItem>
         {
             var nodeStack = new Stack<TNode>(node.ChildNodes);
@@ -82,7 +119,14 @@ namespace Monaco.PathTree
             }
         }
 
-        public static IEnumerable<TNode> DescendantsBreadthFirst<TNode, TItem, TMetadata>(this TNode node)
+        /// <summary>
+        /// Enumerates all child nodes in a breadth-first traversal
+        /// </summary>
+        /// <typeparam name="TNode"></typeparam>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="node">Node to enumerate</param>
+        /// <returns>Sequence of nodes</returns>
+        public static IEnumerable<TNode> DescendantsBreadthFirst<TNode, TItem>(this TNode node)
             where TNode : IPathNode<TNode, TItem>
         {
             var nodeQueue = new Queue<TNode>();

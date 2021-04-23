@@ -3,6 +3,11 @@ using System.Linq;
 
 namespace Monaco.PathTree.Abstractions
 {
+    /// <summary>
+    /// Base node class for implementing Path Tree nodes
+    /// </summary>
+    /// <typeparam name="TNode">Self-referential node</typeparam>
+    /// <typeparam name="TItem">Type of Item stored within the node</typeparam>
     public abstract class PathNodeBase<TNode, TItem> : IPathNode<TNode, TItem>
         where TNode : PathNodeBase<TNode, TItem>
     {
@@ -24,10 +29,7 @@ namespace Monaco.PathTree.Abstractions
             Item = item;
         }
 
-        /// <summary>
-        /// Attaches an existing node as a child
-        /// </summary>
-        /// <param name="node">Node to attach</param>
+        /// <inheritdoc/>
         public void AttachChildNode(TNode node)
         {
             if (node is null)
@@ -46,11 +48,43 @@ namespace Monaco.PathTree.Abstractions
             _children.Add(node.Name, node);
         }
 
-        /// <summary>
-        /// Detaches a child node by name
-        /// </summary>
-        /// <param name="childName">Name of the node to detach</param>
-        /// <returns></returns>
+        /// <inheritdoc/>
+        public bool TryGetChildNode(string childName, out TNode? node)
+        {
+            if (string.IsNullOrWhiteSpace(childName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
+
+            node = default;
+
+            if (_children is null)
+                return false;
+
+            if (_children.TryGetValue(childName, out node))
+                return true;
+
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public bool ContainsChildNode(string childName)
+        {
+            if (string.IsNullOrWhiteSpace(childName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
+
+            if (_children is null)
+                return false;
+
+            return _children.ContainsKey(childName);
+        }
+
+        /// <inheritdoc/>
+        public void Detach()
+        {
+            if (Parent is object)
+                Parent.DetachChildNode(Name);
+        }
+
+        /// <inheritdoc/>
         public TNode DetachChildNode(string childName)
         {
             if (string.IsNullOrWhiteSpace(childName))
@@ -72,10 +106,7 @@ namespace Monaco.PathTree.Abstractions
             }
         }
 
-        /// <summary>
-        /// Removes a child node by name
-        /// </summary>
-        /// <param name="childName">Name of the node to remove</param>
+        /// <inheritdoc/>
         public void RemoveChildNode(string childName)
         {
             if (string.IsNullOrWhiteSpace(childName))
@@ -90,43 +121,7 @@ namespace Monaco.PathTree.Abstractions
                 ThrowHelper.ThrowNodeNotFound(childName);
         }
 
-        /// <summary>
-        /// Renames a child node
-        /// </summary>
-        /// <param name="childName">Name of the existing child node</param>
-        /// <param name="newName">New name</param>
-        public void RenameChild(string childName, string newName)
-        {
-            if (string.IsNullOrWhiteSpace(childName))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
-
-            if (string.IsNullOrWhiteSpace(newName))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(newName));
-
-            if (_children is null)
-                ThrowHelper.ThrowNodeNotFound(childName);
-
-            if (_children.TryGetValue(childName, out var node))
-            {
-                node.Rename(newName);
-            }
-            else
-                ThrowHelper.ThrowNodeNotFound(childName);
-        }
-
-        /// <summary>
-        /// Detaches this node from its parent, if parented
-        /// </summary>
-        public void Detach()
-        {
-            if (Parent is object)
-                Parent.DetachChildNode(Name);
-        }
-
-        /// <summary>
-        /// Renames this node
-        /// </summary>
-        /// <param name="name">New name</param>
+        /// <inheritdoc/>
         public void Rename(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -146,42 +141,24 @@ namespace Monaco.PathTree.Abstractions
             }
         }
 
-        /// <summary>
-        /// Determines if this node contains a child with the specified name
-        /// </summary>
-        /// <param name="childName">Name of child node</param>
-        /// <returns>True if contained, false if not contained</returns>
-        public bool ContainsChildNode(string childName)
+        /// <inheritdoc/>
+        public void RenameChild(string childName, string newName)
         {
             if (string.IsNullOrWhiteSpace(childName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
 
-            if (_children is null)
-                return false;
-
-            return _children.ContainsKey(childName);
-        }
-
-        /// <summary>
-        /// Tries to get a child node by name
-        /// </summary>
-        /// <param name="childName">Name of child node to get</param>
-        /// <param name="node"></param>
-        /// <returns>True if found, false if not found</returns>
-        public bool TryGetChildNode(string childName, out TNode? node)
-        {
-            if (string.IsNullOrWhiteSpace(childName))
-                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
-
-            node = default;
+            if (string.IsNullOrWhiteSpace(newName))
+                ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(newName));
 
             if (_children is null)
-                return false;
+                ThrowHelper.ThrowNodeNotFound(childName);
 
-            if (_children.TryGetValue(childName, out node))
-                return true;
-
-            return false;
+            if (_children.TryGetValue(childName, out var node))
+            {
+                node.Rename(newName);
+            }
+            else
+                ThrowHelper.ThrowNodeNotFound(childName);
         }
     }
 }
