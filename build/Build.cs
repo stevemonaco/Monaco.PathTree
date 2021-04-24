@@ -8,12 +8,15 @@ using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
+using Nuke.Common.Tools.ReportGenerator;
+using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Common.Tools.ReportGenerator.ReportGeneratorTasks;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
@@ -37,6 +40,9 @@ class Build : NukeBuild
     Project TestProject => Solution.GetProject("Monaco.PathTree.UnitTests");
 
     AbsolutePath OutputDirectory => RootDirectory / "output";
+    AbsolutePath TestDirectory => RootDirectory / "test";
+
+    public string CoverageFileName { get; } = "coverage.xml";
 
     Target Clean => _ => _
         .Executes(() =>
@@ -46,6 +52,7 @@ class Build : NukeBuild
 
             dirs.ForEach(DeleteDirectory);
             EnsureCleanDirectory(OutputDirectory);
+            EnsureCleanDirectory(TestDirectory);
         });
 
     Target Restore => _ => _
@@ -74,7 +81,23 @@ class Build : NukeBuild
                 .SetProjectFile(TestProject)
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
-                .EnableNoBuild());
+                .EnableNoBuild()
+                .EnableCollectCoverage()
+                .SetCoverletOutputFormat(CoverletOutputFormat.cobertura)
+                .SetCoverletOutput(TestDirectory / CoverageFileName));
+        });
+
+    Target Coverage => _ => _
+        .DependsOn(Test)
+        .TriggeredBy(Test)
+        .Consumes(Test)
+        .Executes(() =>
+        {
+            ReportGenerator(_ => _
+                .SetReports(TestDirectory / "*.xml")
+                .SetReportTypes(ReportTypes.HtmlInline, ReportTypes.Badges)
+                .SetTargetDirectory(TestDirectory / "reports")
+                .SetFramework("net5.0"));
         });
 
     Target Package => _ => _

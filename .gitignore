@@ -5,6 +5,9 @@
 
 # PathTree-specific ignores
 \output
+OpenCover.xml
+\test
+\.nuke\*
 
 # User-specific files
 *.rsuser
