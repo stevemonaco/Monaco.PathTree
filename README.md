@@ -1,3 +1,8 @@
+[![NuGet](https://img.shields.io/nuget/v/Monaco.PathTree.svg?style=flat)](https://www.nuget.org/packages/Monaco.PathTree/)
+![NetStandard2.1](https://badgen.net/badge/Framework/.NET&nbsp;Standard&nbsp;2.1/blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/stevemonaco/Monaco.PathTree/blob/master/LICENSE)
+[![ci](https://github.com/stevemonaco/Monaco.PathTree/actions/workflows/ci.yml/badge.svg)](https://github.com/stevemonaco/Monaco.PathTree/actions/workflows/ci.yml)
+
 # Monaco.PathTree
 Generic tree structure accessed through disk-like paths. Developed in C# as a .NET Standard 2.1 library.
 
