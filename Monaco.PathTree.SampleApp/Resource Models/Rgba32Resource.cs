@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Monaco.PathTree.SampleApp
+namespace Monaco.PathTree.ConsoleSample
 {
     public class Rgba32Resource : Resource
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Monaco.PathTree.SampleApp
+namespace Monaco.PathTree.ConsoleSample
 {
     public class Metadata
     {

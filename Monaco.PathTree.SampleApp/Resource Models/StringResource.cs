@@ -1,4 +1,4 @@
-﻿namespace Monaco.PathTree.SampleApp
+﻿namespace Monaco.PathTree.ConsoleSample
 {
     public class StringResource : Resource
     {

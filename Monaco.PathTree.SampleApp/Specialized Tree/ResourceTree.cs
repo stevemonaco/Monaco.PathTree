@@ -1,6 +1,6 @@
 ﻿using Monaco.PathTree.Abstractions;
 
-namespace Monaco.PathTree.SampleApp
+namespace Monaco.PathTree.ConsoleSample
 {
     public class ResourceTree : PathTreeBase<ResourceNode, Resource>
     {
