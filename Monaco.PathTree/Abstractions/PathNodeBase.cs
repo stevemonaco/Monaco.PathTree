@@ -30,7 +30,7 @@ namespace Monaco.PathTree.Abstractions
         }
 
         /// <inheritdoc/>
-        public void AttachChildNode(TNode node)
+        public virtual void AttachChildNode(TNode node)
         {
             if (node is null)
                 ThrowHelper.ThrowArgumentNull(nameof(node));
@@ -49,7 +49,7 @@ namespace Monaco.PathTree.Abstractions
         }
 
         /// <inheritdoc/>
-        public bool TryGetChildNode(string childName, out TNode? node)
+        public virtual bool TryGetChildNode(string childName, out TNode? node)
         {
             if (string.IsNullOrWhiteSpace(childName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
@@ -66,7 +66,7 @@ namespace Monaco.PathTree.Abstractions
         }
 
         /// <inheritdoc/>
-        public bool ContainsChildNode(string childName)
+        public virtual bool ContainsChildNode(string childName)
         {
             if (string.IsNullOrWhiteSpace(childName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
@@ -78,14 +78,14 @@ namespace Monaco.PathTree.Abstractions
         }
 
         /// <inheritdoc/>
-        public void Detach()
+        public virtual void Detach()
         {
             if (Parent is object)
                 Parent.DetachChildNode(Name);
         }
 
         /// <inheritdoc/>
-        public TNode DetachChildNode(string childName)
+        public virtual TNode DetachChildNode(string childName)
         {
             if (string.IsNullOrWhiteSpace(childName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
@@ -107,7 +107,7 @@ namespace Monaco.PathTree.Abstractions
         }
 
         /// <inheritdoc/>
-        public void RemoveChildNode(string childName)
+        public virtual void RemoveChildNode(string childName)
         {
             if (string.IsNullOrWhiteSpace(childName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
@@ -122,7 +122,7 @@ namespace Monaco.PathTree.Abstractions
         }
 
         /// <inheritdoc/>
-        public void Rename(string name)
+        public virtual void Rename(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(name));
@@ -142,7 +142,7 @@ namespace Monaco.PathTree.Abstractions
         }
 
         /// <inheritdoc/>
-        public void RenameChild(string childName, string newName)
+        public virtual void RenameChild(string childName, string newName)
         {
             if (string.IsNullOrWhiteSpace(childName))
                 ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));
