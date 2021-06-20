@@ -1,0 +1,49 @@
+{
+	"name" : "PathTree Sample Inc.",
+	"departments" :
+	[
+		{
+			"name" : "Development",
+			"manager" :
+			{
+				"name" : "John Smith",
+				"salary": 73000
+			},
+			"staff" :
+			[
+				{ 
+					"name" : "James White",
+					"salary" : 58000
+				},
+				{ 
+					"name" : "Lisa Greene",
+					"salary" : 63000
+				},
+				{
+					"name" : "Sam Deere",
+					"salary" : 55000
+				}
+			]
+		},
+		{
+			"name" : "Marketing",
+			"manager" :
+			{
+				"name" : "Richard May",
+				"salary" : 84000
+			},
+			"staff" :
+			[
+				{ 
+					"name" : "Cecil Meadows",
+					"salary" : 48000
+				},
+				{ 
+					"name" : "Gene Charles",
+					"salary" : 51000
+				}
+			]
+		}
+	]
+	
+}

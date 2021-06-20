@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.cspr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{58C1D539-66A8-4B85-BA09-06FDB6DE2C0A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monaco.PathTree.Samples.Wpf", "Monaco.PathTree.WpfSample\Monaco.PathTree.Samples.Wpf.csproj", "{CFC2D3B3-F2FE-4F56-8C2A-27D59AC189D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,12 +35,17 @@ Global
 		{BCCED5A0-4BFD-4A8B-899A-2EA412CCC6E5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{927B05D3-7DB0-45CB-BFB2-20D0F46E2259}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{927B05D3-7DB0-45CB-BFB2-20D0F46E2259}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFC2D3B3-F2FE-4F56-8C2A-27D59AC189D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFC2D3B3-F2FE-4F56-8C2A-27D59AC189D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFC2D3B3-F2FE-4F56-8C2A-27D59AC189D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFC2D3B3-F2FE-4F56-8C2A-27D59AC189D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BCCED5A0-4BFD-4A8B-899A-2EA412CCC6E5} = {58C1D539-66A8-4B85-BA09-06FDB6DE2C0A}
+		{CFC2D3B3-F2FE-4F56-8C2A-27D59AC189D8} = {58C1D539-66A8-4B85-BA09-06FDB6DE2C0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2B41989C-1261-4938-A41E-D8D61DA4D2CE}
