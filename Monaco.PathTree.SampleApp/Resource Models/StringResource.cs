@@ -1,13 +1,12 @@
-﻿namespace Monaco.PathTree.ConsoleSample
-{
-    public class StringResource : Resource
-    {
-        public string Contents { get; set; }
+﻿namespace Monaco.PathTree.ConsoleSample;
 
-        public StringResource(string name, string contents)
-        {
-            Name = name;
-            Contents = contents;
-        }
+public class StringResource : Resource
+{
+    public string Contents { get; set; }
+
+    public StringResource(string name, string contents)
+    {
+        Name = name;
+        Contents = contents;
     }
 }

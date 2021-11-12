@@ -1,7 +1,6 @@
-﻿namespace Monaco.PathTree.ConsoleSample
+﻿namespace Monaco.PathTree.ConsoleSample;
+
+public abstract class Resource
 {
-    public abstract class Resource
-    {
-        public string Name { get; set; } = string.Empty;
-    }
+    public string Name { get; set; } = string.Empty;
 }

@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Monaco.PathTree.Samples.Wpf.Tree
+namespace Monaco.PathTree.Samples.Wpf.Tree;
+
+public class OrganizationNode : ResourceNode
 {
-    public class OrganizationNode : ResourceNode
+    public OrganizationNode(string name, IOrgResource item) : base(name, item)
     {
-        public OrganizationNode(string name, IOrgResource item) : base(name, item)
-        {
-        }
     }
 }

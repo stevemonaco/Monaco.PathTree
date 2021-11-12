@@ -5,47 +5,46 @@ using System.IO;
 using Monaco.PathTree.Samples.Wpf.Tree;
 using System;
 
-namespace Monaco.PathTree.Samples.Wpf.Services
+namespace Monaco.PathTree.Samples.Wpf.Services;
+
+public interface IOrganizationService
 {
-    public interface IOrganizationService
+    Task<Organization?> DeserializeFromFile(string organizationFileName);
+    Task<OrganizationTree> DeserializeTreeFromFile(string organizationFileName);
+}
+
+public class OrganizationService : IOrganizationService
+{
+    public async Task<Organization?> DeserializeFromFile(string organizationFileName)
     {
-        Task<Organization?> DeserializeFromFile(string organizationFileName);
-        Task<OrganizationTree> DeserializeTreeFromFile(string organizationFileName);
+        var contents = await File.ReadAllTextAsync(organizationFileName);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        return JsonSerializer.Deserialize<Organization>(contents, options);
     }
 
-    public class OrganizationService : IOrganizationService
+    public async Task<OrganizationTree> DeserializeTreeFromFile(string organizationFileName)
     {
-        public async Task<Organization?> DeserializeFromFile(string organizationFileName)
-        {
-            var contents = await File.ReadAllTextAsync(organizationFileName);
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
+        throw new NotImplementedException();
 
-            return JsonSerializer.Deserialize<Organization>(contents, options);
-        }
+        //var contents = await File.ReadAllTextAsync(organizationFileName);
+        //var options = new JsonSerializerOptions
+        //{
+        //    PropertyNameCaseInsensitive = true
+        //};
 
-        public async Task<OrganizationTree> DeserializeTreeFromFile(string organizationFileName)
-        {
-            throw new NotImplementedException();
+        //var org = JsonSerializer.Deserialize<Organization>(contents, options);
 
-            //var contents = await File.ReadAllTextAsync(organizationFileName);
-            //var options = new JsonSerializerOptions
-            //{
-            //    PropertyNameCaseInsensitive = true
-            //};
+        //if (org is null)
+        //    throw new JsonException();
 
-            //var org = JsonSerializer.Deserialize<Organization>(contents, options);
+        //// Map to PathTree
+        //var root = new OrganizationNode(org.Name, org);
+        //var tree = new OrganizationTree(root);
 
-            //if (org is null)
-            //    throw new JsonException();
-
-            //// Map to PathTree
-            //var root = new OrganizationNode(org.Name, org);
-            //var tree = new OrganizationTree(root);
-
-            //var departmentVisitor =
-        }
+        //var departmentVisitor =
     }
 }

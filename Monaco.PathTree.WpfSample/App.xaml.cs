@@ -6,17 +6,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Monaco.PathTree.Samples.Wpf
+namespace Monaco.PathTree.Samples.Wpf;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    private void Application_Startup(object sender, StartupEventArgs e)
     {
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-            var bootstrapper = new Bootstrapper();
-            bootstrapper.Initialize();
-        }
+        var bootstrapper = new Bootstrapper();
+        bootstrapper.Initialize();
     }
 }

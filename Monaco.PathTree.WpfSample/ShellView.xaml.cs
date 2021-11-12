@@ -13,17 +13,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Monaco.PathTree.Samples.Wpf
+namespace Monaco.PathTree.Samples.Wpf;
+
+/// <summary>
+/// Interaction logic for ShellView.xaml
+/// </summary>
+public partial class ShellView : Window
 {
-    /// <summary>
-    /// Interaction logic for ShellView.xaml
-    /// </summary>
-    public partial class ShellView : Window
+    public ShellView()
     {
-        public ShellView()
-        {
-            DataContext = Ioc.Default.GetService<ShellViewModel>();
-            InitializeComponent();
-        }
+        DataContext = Ioc.Default.GetService<ShellViewModel>();
+        InitializeComponent();
     }
 }

@@ -1,12 +1,11 @@
 ﻿using Monaco.PathTree.Abstractions;
 
-namespace Monaco.PathTree.ConsoleSample
+namespace Monaco.PathTree.ConsoleSample;
+
+public class ResourceTree : PathTreeBase<ResourceNode, Resource>
 {
-    public class ResourceTree : PathTreeBase<ResourceNode, Resource>
+    public ResourceTree(ResourceNode root) :
+        base(root)
     {
-        public ResourceTree(ResourceNode root) :
-            base(root)
-        {
-        }
     }
 }

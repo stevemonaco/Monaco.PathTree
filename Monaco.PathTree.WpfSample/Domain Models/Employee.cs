@@ -1,8 +1,7 @@
-﻿namespace Monaco.PathTree.Samples.Wpf.DomainModels
+﻿namespace Monaco.PathTree.Samples.Wpf.DomainModels;
+
+public class Employee : IOrgResource
 {
-    public class Employee : IOrgResource
-    {
-        public string Name { get; set; } = string.Empty;
-        public decimal Salary { get; set; }
-    }
+    public string Name { get; set; } = string.Empty;
+    public decimal Salary { get; set; }
 }

@@ -6,12 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Monaco.PathTree.Samples.Wpf.Tree
+namespace Monaco.PathTree.Samples.Wpf.Tree;
+
+public sealed class OrganizationTree : PathTreeBase<ResourceNode, IOrgResource>
 {
-    public sealed class OrganizationTree : PathTreeBase<ResourceNode, IOrgResource>
+    public OrganizationTree(ResourceNode root) : base(root)
     {
-        public OrganizationTree(ResourceNode root) : base(root)
-        {
-        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
     <Authors>Steve Monaco</Authors>
@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/stevemonaco/Monaco.PathTree</PackageProjectUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
-    <Version>1.1</Version>
+    <Version>1.2</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Generic tree structure accessed via disk-like paths. Useful for project hierarchies where resources can be decoupled from the tree.</Description>

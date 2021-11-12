@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Monaco.PathTree.Samples.Wpf.Tree
+namespace Monaco.PathTree.Samples.Wpf.Tree;
+
+class EmployeeNode
 {
-    class EmployeeNode
-    {
-    }
 }

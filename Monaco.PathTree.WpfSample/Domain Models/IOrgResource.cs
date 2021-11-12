@@ -1,10 +1,9 @@
-﻿namespace Monaco.PathTree.Samples.Wpf.DomainModels
+﻿namespace Monaco.PathTree.Samples.Wpf.DomainModels;
+
+public interface IOrgResource
 {
-    public interface IOrgResource
-    {
-        /// <summary>
-        /// Identifying resource name
-        /// </summary>
-        public string Name { get; set; }
-    }
+    /// <summary>
+    /// Identifying resource name
+    /// </summary>
+    public string Name { get; set; }
 }
