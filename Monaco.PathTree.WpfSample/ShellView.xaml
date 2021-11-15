@@ -62,8 +62,6 @@
                                 <DataTemplate DataType="{x:Type model:Employee}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Name}" />
-                                        <TextBlock Text=" - " />
-                                        <TextBlock Text="{Binding Salary}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </HierarchicalDataTemplate.ItemTemplate>
@@ -74,7 +72,29 @@
         </TreeView>
 
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <TextBlock Text="Testing" />
+            <StackPanel.Resources>
+                <DataTemplate DataType="{x:Type model:Employee}">
+                    <StackPanel>
+                        <TextBlock Text="Employee" />
+                        <TextBlock Text="{Binding Name, StringFormat=Name: {0}}" />
+                        <TextBlock Text="{Binding Salary, StringFormat=Salary: ${0}}" />
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type model:Department}">
+                    <StackPanel>
+                        <TextBlock Text="Department" />
+                        <TextBlock Text="{Binding Name, StringFormat=Name: {0}}" />
+                        <TextBlock Text="{Binding Manager.Name, StringFormat=Manager: {0}}" />
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type model:Organization}">
+                    <StackPanel>
+                        <TextBlock Text="Organization" />
+                        <TextBlock Text="{Binding Name, StringFormat=Name: {0}}" />
+                    </StackPanel>
+                </DataTemplate>
+            </StackPanel.Resources>
+            <ContentControl Content="{Binding SelectedNode}" />
         </StackPanel>
 
         <StatusBar
