@@ -43,6 +43,7 @@ class Build : NukeBuild
     AbsolutePath TestDirectory => RootDirectory / "test";
 
     public string CoverageFileName { get; } = "coverage.xml";
+    public string PublishProfile { get; } = @"Properties/Publish Profiles/FolderProfile.pubxml";
 
     Target Clean => _ => _
         .Executes(() =>
@@ -109,7 +110,6 @@ class Build : NukeBuild
                 .SetProject(PathTreeProject)
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
-                .EnableNoBuild()
                 .SetOutputDirectory(OutputDirectory));
         });
 
@@ -121,8 +121,8 @@ class Build : NukeBuild
             DotNetPublish(_ => _
                 .SetProject(PathTreeProject)
                 .EnableNoRestore()
-                .EnableNoBuild()
                 .SetConfiguration(Configuration)
+                .SetPublishProfile(PublishProfile)
                 .SetOutput(OutputDirectory));
         });
 }
