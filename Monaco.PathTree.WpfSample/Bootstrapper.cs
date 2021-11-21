@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Monaco.PathTree.Samples.Wpf.Services;
 
 namespace Monaco.PathTree.Samples.Wpf;
