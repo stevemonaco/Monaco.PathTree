@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Authors>Stephen Monaco</Authors>
+		<Company>Stephen Monaco</Company>
+		<Copyright>Copyright © Stephen Monaco 2023</Copyright>
+		<Version>1.2.1</Version>
+		<AssemblyVersion>1.2.1.0</AssemblyVersion>
+		<FileVersion>1.2.1.0</FileVersion>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Description>Generic tree structure accessed via disk-like paths. Useful for project hierarchies where resources can be decoupled from the tree.</Description>
+	</PropertyGroup>
+	<PropertyGroup>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<LangVersion>latest</LangVersion>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+</Project>

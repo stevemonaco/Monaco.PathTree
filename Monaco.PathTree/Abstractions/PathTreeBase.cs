@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -86,7 +87,7 @@ public abstract class PathTreeBase<TNode, TItem> : IPathTree<TNode, TItem>
     }
 
     /// <inheritdoc/>
-    public virtual bool TryGetItem(string path, out TItem? item)
+    public virtual bool TryGetItem(string path, [MaybeNullWhen(false)] out TItem item)
     {
         if (path is null)
             ThrowHelper.ThrowArgumentNull(nameof(path));

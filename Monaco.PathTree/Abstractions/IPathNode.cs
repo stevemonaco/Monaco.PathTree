@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Monaco.PathTree.Abstractions;
 
@@ -35,7 +36,7 @@ public interface IPathNode<TNode, TItem>
     /// <param name="childName">Name of child node to get</param>
     /// <param name="node"></param>
     /// <returns>True if found, false if not found</returns>
-    bool TryGetChildNode(string childName, out TNode? node);
+    bool TryGetChildNode(string childName, [MaybeNullWhen(false)] out TNode node);
 
     /// <summary>
     /// Determines if this node contains a child with the specified name

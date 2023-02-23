@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Monaco.PathTree.Abstractions;
@@ -49,7 +50,7 @@ public abstract class PathNodeBase<TNode, TItem> : IPathNode<TNode, TItem>
     }
 
     /// <inheritdoc/>
-    public virtual bool TryGetChildNode(string childName, out TNode? node)
+    public virtual bool TryGetChildNode(string childName, [MaybeNullWhen(false)] out TNode node)
     {
         if (string.IsNullOrWhiteSpace(childName))
             ThrowHelper.ThrowStringNullEmptyOrWhiteSpace(nameof(childName));

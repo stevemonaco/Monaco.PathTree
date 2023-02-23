@@ -1,4 +1,5 @@
 ﻿using Monaco.PathTree.Abstractions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Monaco.PathTree;
 
@@ -40,7 +41,7 @@ public interface IPathTree<TNode, TItem>
     /// <param name="path">The full path associated with the item</param>
     /// <param name="item"></param>
     /// <returns>True if successful, false if failed</returns>
-    bool TryGetItem(string path, out TItem? item);
+    bool TryGetItem(string path, [MaybeNullWhen(false)] out TItem item);
 
     /// <summary>
     /// Tries to get an existing item of a specific type stored at the specified path
@@ -57,7 +58,7 @@ public interface IPathTree<TNode, TItem>
     /// <param name="path">The full path associated with the item</param>
     /// <param name="node"></param>
     /// <returns>True if found, false if not found</returns>
-    bool TryGetNode(string path, out TNode? node);
+    bool TryGetNode(string path, [MaybeNullWhen(false)] out TNode node);
 
     /// <summary>
     /// Removes the node at the specified location
