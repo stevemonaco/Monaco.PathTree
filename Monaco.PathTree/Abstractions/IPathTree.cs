@@ -50,7 +50,7 @@ public interface IPathTree<TNode, TItem>
     /// <param name="path">The full path associated with the item</param>
     /// <param name="item"></param>
     /// <returns>True if successful, false if failed</returns>
-    bool TryGetItem<U>(string path, out U? item) where U : TItem;
+    bool TryGetItem<U>(string path, [MaybeNullWhen(false)] out U item) where U : TItem;
 
     /// <summary>
     /// Tries to get the node contained at the specified location

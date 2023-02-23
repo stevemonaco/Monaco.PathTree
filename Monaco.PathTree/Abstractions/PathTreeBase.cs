@@ -109,7 +109,7 @@ public abstract class PathTreeBase<TNode, TItem> : IPathTree<TNode, TItem>
     }
 
     /// <inheritdoc/>
-    public virtual bool TryGetItem<TDerivedItem>(string path, out TDerivedItem? item) where TDerivedItem : TItem
+    public virtual bool TryGetItem<TDerivedItem>(string path, [MaybeNullWhen(false)] out TDerivedItem item) where TDerivedItem : TItem
     {
         if (path is null)
             ThrowHelper.ThrowArgumentNull(nameof(path));
@@ -131,7 +131,7 @@ public abstract class PathTreeBase<TNode, TItem> : IPathTree<TNode, TItem>
     }
 
     /// <inheritdoc/>
-    public virtual bool TryGetNode(string path, out TNode? node)
+    public virtual bool TryGetNode(string path, [MaybeNullWhen(false)] out TNode node)
     {
         if (path is null)
             ThrowHelper.ThrowArgumentNull(nameof(path));
